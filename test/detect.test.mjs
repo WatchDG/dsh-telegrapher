@@ -121,6 +121,8 @@ test('wrapper: drops the sentence that introduces a value', () => {
 test('narration: a status line before a tool call disappears', () => {
   const status = hit('narration', textUnit('Let me check the config first.', { hasToolCalls: true }))
   assert.equal(status.after, '')
+  const typo = hit('narration', textUnit('Lets me check the config first.', { hasToolCalls: false }))
+  assert.equal(typo.after, 'check the config first.')
   const lead = hit('narration', textUnit('Let me check the config first.', { hasToolCalls: false }))
   assert.equal(lead.after, 'check the config first.')
 })
@@ -311,6 +313,8 @@ test('verbose-done: one-sentence mechanical completion collapses to Done', () =>
 test('apology: strips self-blame before the fix', () => {
   const result = hit('apology', textUnit('Sorry about that! The path is lib/index.js.'))
   assert.equal(result.after, 'The path is lib/index.js.')
+  const oops = hit('apology', textUnit('Oops, the path is lib/index.js.'))
+  assert.equal(oops.after, 'the path is lib/index.js.')
   const ru = hit('apology', textUnit('Извините за путаницу. Путь: lib/index.js.'))
   assert.equal(ru.after, 'Путь: lib/index.js.')
 })
@@ -351,12 +355,33 @@ test('thinking-code-draft: drops code drafted in thinking before a write/edit', 
   assert.ok(result.after.includes('Now write.'))
 })
 
-test('thinking-filler: strips conversational self-talk in reasoning', () => {
+test('thinking-narration: strips intent lead-ins and tool-call announcements in reasoning', () => {
+  const lead = hit(
+    'thinking-narration',
+    thinkingUnit('First, let me check the schema. Lets me verify the port.'),
+  )
+  assert.equal(lead.after, 'check the schema. verify the port.')
+  const trailing = hit(
+    'thinking-narration',
+    thinkingUnit('The schema is missing a field.\nLet me read lib/config.js first.', { hasToolCalls: true }),
+  )
+  assert.equal(trailing.after, 'The schema is missing a field.')
+  const pure = hit('thinking-narration', thinkingUnit('Let me read lib/config.js.', { hasToolCalls: true }))
+  assert.equal(pure.after, '')
+})
+
+test('thinking-filler: strips conversational self-talk and interjections in reasoning', () => {
   const result = hit(
     'thinking-filler',
     thinkingUnit("Okay, let's see what we have here. The cache key misses the port."),
   )
   assert.equal(result.after, 'The cache key misses the port.')
+  const pivots = hit(
+    'thinking-filler',
+    thinkingUnit('Wait — the token is null. Hmm, check the header. Oops: wrong offset.'),
+  )
+  assert.equal(pivots.after, 'the token is null. check the header. wrong offset.')
+  miss('thinking-filler', thinkingUnit('Wait for the child process to exit before closing.'))
 })
 
 test('thinking-plan: drops plan steps already written earlier', () => {

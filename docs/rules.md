@@ -49,8 +49,8 @@ Three kinds of entry:
 The section is placed right after the shell tools' guidance
 (`getSectionOrder('TOOL_PWSH') + 5`, fallback order 1215).
 
-Costs on the reference tokenizer (`tiktoken` `o200k_base`): **lean 390 tokens**,
-**full 868 tokens** per request. The ledger prints the price of each line and the
+Costs on the reference tokenizer (`tiktoken` `o200k_base`): **lean 437 tokens**,
+**full 903 tokens** per request. The ledger prints the price of each line and the
 saving it measured, so a line that does not pay for itself is visible.
 
 ## The default (lean) section
@@ -80,6 +80,8 @@ These rules govern the text you write and never override correctness.
 - Thinking is billed output: cut restatement and re-derivation, never depth.
 - Don't narrate a tool result in thinking.
 - Never draft full code blocks in thinking before writing or editing: emit code once in the tool call.
+- No intent or tool narration in thinking (let me, let's, I'll): state the target or emit the call.
+- No self-talk or interjections in thinking (wait, hmm, oops); state checks and fixes directly.
 ```
 
 Language routing is documented on its own page: [language.md](language.md).
@@ -165,7 +167,8 @@ disagree, the code wins.
 | `thinking-billed` | lean | guard — no detector |
 | `thinking-echo` | lean | measured — `thinking-echo` |
 | `thinking-no-code-draft` | lean | measured — `thinking-code-draft` |
-| `thinking-no-meta` | full | measured — `thinking-filler` |
+| `thinking-no-narration` | lean | measured — `thinking-narration` |
+| `thinking-no-meta` | lean | measured — `thinking-filler` |
 | `thinking-rederive` | full | measured — `thinking-rederive` |
 | `thinking-plan` | full | measured — `thinking-plan` |
 

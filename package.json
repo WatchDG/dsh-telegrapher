@@ -1,6 +1,6 @@
 {
   "name": "dsh-telegrapher",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "Telegrapher token economy for DeepSeek Harness: prompt rules that cut output and thinking tokens, measured against real DSH sessions with tiktoken.",

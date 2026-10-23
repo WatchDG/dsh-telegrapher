@@ -4,6 +4,27 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] — 2026-10-23
+
+### Added
+
+- **`thinking-no-narration` rule and detector** — a `lean` thinking guard for
+  intent lead-ins ("Let me check X", "I'll read Y") and, on a unit that calls
+  tools, for whole lines that announce the upcoming call; the catalogue grows to
+  44 detectors.
+- **Interjections read as apologies** — the `apology` detector also removes
+  "Oops", "Whoops", "My bad", "Упс" and "Ой" from prose before the fix.
+
+### Changed
+
+- **`thinking-no-meta` promoted to `lean`** — reworded around self-talk and
+  interjections; the `thinking-filler` detector strips standalone "wait", "hmm"
+  and "oops" pivots mid-reasoning, not only openers.
+- **`narration` accepts "Lets me"** — the misspelt lead-in is treated like
+  "Let me", so the sentence still loses its intent clause.
+- **Section prices** — `lean` now costs 437 tokens per request (was 390) and
+  `full` 903 (was 868) on `o200k_base`.
+
 ## [1.1.0] — 2026-10-23
 
 ### Added

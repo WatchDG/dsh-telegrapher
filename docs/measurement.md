@@ -47,7 +47,7 @@ lines written after the message it inspects.
 
 ## Detectors
 
-[`lib/detect.js`](../lib/detect.js) holds 43 pure detectors. A detector receives
+[`lib/detect.js`](../lib/detect.js) holds 44 pure detectors. A detector receives
 a unit (or a session, for the seven session-scope detectors) and returns the text
 as the rule would have written it, or nothing. The rules it follows:
 
@@ -61,7 +61,7 @@ Scope:
 | Scope | Detectors |
 |---|---|
 | text block | `filler`, `recap`, `offer`, `restate`, `reprint`, `next-steps`, `before-after`, `wrapper`, `command-quote`, `narration`, `tool-echo`, `markup`, `table`, `terminal-period`, `fence-lang`, `comma-path`, `verbose-done`, `apology`, `short-list`, `plain-backticks`, `duplicate-url-link`, `repeat-paragraph`, and the four controls (`blank-lines`, `invented-abbrev`, `causal-arrow`, `em-dash`) |
-| reasoning block | `thinking-echo`, `thinking-code-draft`, `thinking-filler`, `thinking-rederive`, `thinking-plan` |
+| reasoning block | `thinking-echo`, `thinking-code-draft`, `thinking-narration`, `thinking-filler`, `thinking-rederive`, `thinking-plan` |
 | one tool call | `edit-anchor`, `cd-prefix`, `tool-description`, `banner-comments`, `shell-separators` |
 | whole session | `path-repeat`, `repeat-write`, `identical-edits`, `adjacent-edits`, `repeat-read`, `template-writes`, `hot-command` |
 

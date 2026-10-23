@@ -24,8 +24,8 @@
 по выбранному режиму:
 
 - **lean** (по умолчанию) — языковая политика плюс самые ценные правила для
-  ответа, инструментов и обдумывания, 390 токенов на запрос в этом каталоге;
-- **full** — все измеряемые правила плюс заголовки разделов, 868 токенов;
+  ответа, инструментов и обдумывания, 437 токенов на запрос в этом каталоге;
+- **full** — все измеряемые правила плюс заголовки разделов, 903 токена;
 - **auto** — базовые защиты плюс только те правила, чья измеренная окупаемость
   на сессиях профиля `payback >= 1×` (до первого скана работает как `lean`);
 - **off** — секции нет.
@@ -134,7 +134,7 @@ py -3 -c "import tiktoken; print(tiktoken.__version__)"
 
 ## Секция по умолчанию
 
-`mode: lean` отрисовывает ровно это (390 токенов в `o200k_base`):
+`mode: lean` отрисовывает ровно это (437 токенов в `o200k_base`):
 
 ```text
 ## Token economy (telegrapher)
@@ -161,6 +161,8 @@ These rules govern the text you write and never override correctness.
 - Thinking is billed output: cut restatement and re-derivation, never depth.
 - Don't narrate a tool result in thinking.
 - Never draft full code blocks in thinking before writing or editing: emit code once in the tool call.
+- No intent or tool narration in thinking (let me, let's, I'll): state the target or emit the call.
+- No self-talk or interjections in thinking (wait, hmm, oops); state checks and fixes directly.
 ```
 
 Секция ставится сразу после руководства по инструментам оболочки. Список держит

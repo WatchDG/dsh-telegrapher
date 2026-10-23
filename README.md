@@ -24,8 +24,8 @@ One system-prompt section, `telegrapher:rules`, compiled from a rule catalogue
 for the configured mode:
 
 - **lean** (default) — the language policy plus the highest-value rules for
-  output, tools and thinking, 390 tokens per request on this catalogue;
-- **full** — every measured rule plus section headings, 868 tokens;
+  output, tools and thinking, 437 tokens per request on this catalogue;
+- **full** — every measured rule plus section headings, 903 tokens;
 - **auto** — the lean guards plus only the rules whose measured `payback >= 1×`
   on this profile's sessions (falls back to `lean` before the first scan);
 - **off** — no section at all.
@@ -133,7 +133,7 @@ files to load the Host JavaScript again.
 
 ## The default section
 
-`mode: lean` renders exactly this (390 tokens with `o200k_base`):
+`mode: lean` renders exactly this (437 tokens with `o200k_base`):
 
 ```text
 ## Token economy (telegrapher)
@@ -160,6 +160,8 @@ These rules govern the text you write and never override correctness.
 - Thinking is billed output: cut restatement and re-derivation, never depth.
 - Don't narrate a tool result in thinking.
 - Never draft full code blocks in thinking before writing or editing: emit code once in the tool call.
+- No intent or tool narration in thinking (let me, let's, I'll): state the target or emit the call.
+- No self-talk or interjections in thinking (wait, hmm, oops); state checks and fixes directly.
 ```
 
 The section is placed right after the shell tools' guidance. The ledger's
