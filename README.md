@@ -24,8 +24,10 @@ One system-prompt section, `telegrapher:rules`, compiled from a rule catalogue
 for the configured mode:
 
 - **lean** (default) — the language policy plus the highest-value rules for
-  output and thinking, 318 tokens per request on this catalogue;
-- **full** — every measured rule plus section headings, 764 tokens;
+  output, tools and thinking, 390 tokens per request on this catalogue;
+- **full** — every measured rule plus section headings, 868 tokens;
+- **auto** — the lean guards plus only the rules whose measured `payback >= 1×`
+  on this profile's sessions (falls back to `lean` before the first scan);
 - **off** — no section at all.
 
 Rules cover the three sinks a coding session pays for: tool arguments (minimal
@@ -131,7 +133,7 @@ files to load the Host JavaScript again.
 
 ## The default section
 
-`mode: lean` renders exactly this (318 tokens with `o200k_base`):
+`mode: lean` renders exactly this (390 tokens with `o200k_base`):
 
 ```text
 ## Token economy (telegrapher)
@@ -151,8 +153,13 @@ These rules govern the text you write and never override correctness.
 - Report checks as `N/N pass`, `N/M fail`, `clean`; don't echo tool output.
 - Minimal unique `old_string`: the changed line, one context line only on a collision.
 - Edit existing files; a second write of a path already written means edit. Rewrite only for a new file or a replacement above half the content.
+- `replace_all` instead of N identical edits.
+- Combine adjacent edits to the same file in one turn into a single edit call.
+- Shell descriptions: two to five words, active voice.
+- No decorative echo/printf separators in shell commands.
 - Thinking is billed output: cut restatement and re-derivation, never depth.
 - Don't narrate a tool result in thinking.
+- Never draft full code blocks in thinking before writing or editing: emit code once in the tool call.
 ```
 
 The section is placed right after the shell tools' guidance. The ledger's
@@ -198,33 +205,38 @@ published.
 
 | Metric | Value |
 |---|---|
-| Sessions / assistant steps | 50 / 5 062 |
-| Recorded output tokens | 3.1 M |
-| Tool arguments | 79% (1.5 M) |
-| Thinking | 16% (287.5 K) |
-| Reply text | 5% (98.6 K) |
-| Largest single tool | `edit` 42%, `write` 26%, `pwsh` 6% |
-| Lean section cost | 318 tokens per request |
-| Measured potential from supported rules | 72.0 K tokens (2% of output), rules overlapping |
+| Sessions / assistant steps | 50 / 5 163 |
+| Recorded output tokens | 3.2 M |
+| Tool arguments | 77% (1.5 M) |
+| Thinking | 17% (339.2 K) |
+| Reply text | 5% (101.5 K) |
+| Largest single tool | `edit` 41%, `write` 26%, `pwsh` 6%, `read` 2% |
+| Lean section cost | 390 tokens per request |
+| Measured potential from supported rules | 108.3 K tokens (3% of output), rules overlapping |
 
 Per rule (occurrences, tokens, verdict):
 
 | Rule | Occurrences | Tokens | Verdict |
 |---|---|---|---|
-| `tools-edit-anchor` | 1 199 | 58.4 K | supported — 49 tokens per wide anchor, over 17 sessions |
-| `tools-replace-all` | 35 | 7.3 K | supported |
-| `markdown-markup` | 184 | 1.6 K | supported |
-| `core-alias` | 22 | 1.6 K | supported |
-| `tools-description` | 470 | 878 | supported |
-| `core-hoist` | 7 | 607 | supported, but payback 0.5× — the line costs more than it saves |
+| `tools-edit-anchor` | 1 222 | 59.8 K | supported — 49 tokens per wide anchor, over 17 sessions (payback 63.0×) |
+| `tools-merge-edits` | 463 | 29.4 K | supported — adjacent same-file edits in one turn, over 18 sessions (34.6×) |
+| `tools-replace-all` | 37 | 7.5 K | supported — 13.6× payback |
+| `thinking-no-code-draft` | 36 | 3.8 K | supported — code drafted in thinking before write/edit, over 4 sessions (3.6×) |
+| `markdown-markup` | 184 | 1.6 K | supported — 2.0× payback |
+| `core-alias` | 22 | 1.6 K | supported — 1.0× payback |
+| `tools-no-shell-sep` | 122 | 1.1 K | supported — decorative shell separators, over 8 sessions (2.0×) |
+| `tools-description` | 494 | 925 | supported — 1.5× payback |
+| `core-hoist` | 7 | 607 | supported, payback 0.6× |
 | `thinking-rederive` | 6 | 436 | supported |
 | `response-no-next-steps` | 3 | 417 | supported |
-| `core-narration` | 20 | 336 | supported |
+| `core-narration` | 21 | 342 | supported |
+| `tools-read-scope` | 12 | 304 | supported — repeated unchanged reads |
 | `markdown-tables` | 14 | 248 | supported |
 | `response-answer-first` | 4 | 220 | supported |
-| `markdown-terminal-period` | 569 | 564 | inconclusive — 1.0 tokens per occurrence |
-| `control-arrow` | 144 | 21 | refuted — an arrow and a period are both one token |
-| `control-blank-lines` | 99 | 3 | refuted — measured as no saving |
+| `markdown-terminal-period` | 572 | 567 | inconclusive — 1.0 tokens per occurrence |
+| `control-em-dash` | 524 | 0 | refuted — an em-dash and a hyphen are both one token |
+| `control-arrow` | 147 | 21 | refuted — an arrow and a period are both one token |
+| `control-blank-lines` | 104 | 3 | refuted — measured as no saving |
 | `control-abbrev` | 3 | 0 | refuted — measured as no saving |
 
 The arrow row is worth noting: the inherited catalogue carried "no causal arrows"
@@ -244,12 +256,13 @@ layer, or edit it live on the **Settings → Telegrapher** page.
 
 | Field | Type | Default | Meaning |
 |---|---|---|---|
-| `mode` | `'lean' \| 'full' \| 'off'` | `'lean'` | Prompt section mode. `off` registers no section. |
+| `mode` | `'lean' \| 'full' \| 'auto' \| 'off'` | `'lean'` | Prompt section mode. `auto` keeps rules with `payback >= 1×`; `off` registers no section. |
 | `thinking` | boolean | `true` | Include the thinking rules. |
 | `analysis` | boolean | `true` | Serve the measured report. When off, the tool answers that analysis is disabled. |
 | `sessions` | number | `20` | Newest sessions one report scans (1–100). |
 | `encoding` | string | `'o200k_base'` | Any tiktoken encoding name. |
 | `python` | string | `'auto'` | `'auto'` or a path to a Python 3 with tiktoken. |
+| `disabled` | `string[]` | `[]` | Rule ids excluded from the compiled prompt section. |
 
 ```yaml
 - id: telegrapher
@@ -272,10 +285,12 @@ answer is a bounded text table:
 
 | Action | Answer |
 |---|---|
-| `summary` | corpus totals, sink attribution, top tools, supported rules, H1/H2 verdict, section cost |
+| `summary` | corpus totals, sink attribution, top tools, supported rules (sum and net), H1/H2 verdict, section cost |
 | `rules` | per-rule table: occurrences, tokens, tokens per session, payback, verdict |
 | `hypotheses` | the ledger: empirical claims first, then rules, then uncovered sinks |
+| `audit` | payback recommendations: which rules pay back (`>= 1×`) and which lean rules are below `1×` |
 | `sessions` | the newest scanned sessions with model, steps, output and thinking |
+| `session` | detailed breakdown of a single session (`session` id or prefix, defaults to newest) |
 | `measure` | tiktoken counts for given `texts` and `[before, after]` `pairs` |
 
 `measure` is how an agent tests a candidate rewrite before proposing a rule:

@@ -124,3 +124,19 @@ test('every rendered rule is unique text and not duplicated', () => {
     assert.equal(RULES_BY_ID.get(rule.id)?.id, rule.id)
   }
 })
+
+test('auto mode keeps lean guards plus supported rules and respects disabled rules', () => {
+  const autoFallback = activeRules({ mode: 'auto', thinking: true })
+  assert.deepEqual(autoFallback.map((r) => r.id), activeRules(lean).map((r) => r.id))
+
+  const supported = new Set(['tools-edit-anchor', 'core-alias'])
+  const autoMeasured = activeRules({ mode: 'auto', thinking: true }, supported)
+  const autoIds = autoMeasured.map((r) => r.id)
+  assert.ok(autoIds.includes('core-language-user'), 'keeps lean guards')
+  assert.ok(autoIds.includes('tools-edit-anchor'), 'keeps supported lean rule')
+  assert.ok(autoIds.includes('core-alias'), 'promotes supported full rule')
+  assert.equal(autoIds.includes('core-filler'), false, 'drops unsupported lean rule')
+
+  const withDisabled = activeRules({ mode: 'lean', thinking: true, disabled: ['core-filler'] })
+  assert.equal(withDisabled.some((r) => r.id === 'core-filler'), false)
+})

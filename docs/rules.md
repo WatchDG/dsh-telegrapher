@@ -41,14 +41,16 @@ Three kinds of entry:
 |---|---|
 | `mode: lean` | Heading, one framing line, then every `lean` rule as a bullet. No section headings. |
 | `mode: full` | Same, plus `full` rules, grouped under `### Core`, `### Response`, … |
+| `mode: auto` | Lean guards plus every rule in the catalogue whose measured `payback >= 1×` on the corpus (falls back to `lean` before the first scan). |
 | `mode: off` | No section at all. |
 | `thinking: false` | Drops the `thinking` section rules; language, substance and output rules stay. |
+| `disabled: [...]` | Excludes the listed rule ids from compilation. |
 
 The section is placed right after the shell tools' guidance
 (`getSectionOrder('TOOL_PWSH') + 5`, fallback order 1215).
 
-Costs on the reference tokenizer (`tiktoken` `o200k_base`): **lean 318 tokens**,
-**full 764 tokens** per request. The ledger prints the price of each line and the
+Costs on the reference tokenizer (`tiktoken` `o200k_base`): **lean 390 tokens**,
+**full 868 tokens** per request. The ledger prints the price of each line and the
 saving it measured, so a line that does not pay for itself is visible.
 
 ## The default (lean) section
@@ -71,8 +73,13 @@ These rules govern the text you write and never override correctness.
 - Report checks as `N/N pass`, `N/M fail`, `clean`; don't echo tool output.
 - Minimal unique `old_string`: the changed line, one context line only on a collision.
 - Edit existing files; a second write of a path already written means edit. Rewrite only for a new file or a replacement above half the content.
+- `replace_all` instead of N identical edits.
+- Combine adjacent edits to the same file in one turn into a single edit call.
+- Shell descriptions: two to five words, active voice.
+- No decorative echo/printf separators in shell commands.
 - Thinking is billed output: cut restatement and re-derivation, never depth.
 - Don't narrate a tool result in thinking.
+- Never draft full code blocks in thinking before writing or editing: emit code once in the tool call.
 ```
 
 Language routing is documented on its own page: [language.md](language.md).
@@ -111,7 +118,8 @@ disagree, the code wins.
 | `response-bare-value` | full | measured — `wrapper` |
 | `response-no-command-quote` | full | measured — `command-quote` |
 | `response-one-example` | full | guard — no detector |
-| `response-done` | full | guard — no detector |
+| `response-done` | full | measured — `verbose-done` |
+| `response-no-apology` | full | measured — `apology` |
 
 ### Markdown (`markdown`)
 
@@ -119,12 +127,14 @@ disagree, the code wins.
 |---|---|---|
 | `markdown-markup` | lean | measured — `markup` |
 | `markdown-tables` | full | measured — `table` |
-| `markdown-lists` | full | guard — no detector |
-| `markdown-backticks` | full | guard — no detector |
+| `markdown-lists` | full | measured — `short-list` |
+| `markdown-backticks` | full | measured — `plain-backticks` |
 | `markdown-path-sep` | full | measured — `comma-path` |
 | `markdown-terminal-period` | full | measured — `terminal-period` |
 | `markdown-fence-lang` | full | measured — `fence-lang` |
+| `markdown-bare-url` | full | measured — `duplicate-url-link` |
 | `control-blank-lines` | full | control — never rendered |
+| `control-em-dash` | full | control — never rendered |
 
 ### Status (`status`)
 
@@ -138,12 +148,15 @@ disagree, the code wins.
 |---|---|---|
 | `tools-edit-anchor` | lean | measured — `edit-anchor` |
 | `tools-edit-not-write` | lean | measured — `repeat-write` |
-| `tools-replace-all` | full | measured — `identical-edits` |
+| `tools-replace-all` | lean | measured — `identical-edits` |
+| `tools-merge-edits` | lean | measured — `adjacent-edits` |
 | `tools-no-cd` | full | measured — `cd-prefix` |
-| `tools-description` | full | measured — `tool-description` |
-| `tools-read-scope` | full | guard — no detector |
+| `tools-description` | lean | measured — `tool-description` |
+| `tools-no-banner-comments` | full | measured — `banner-comments` |
+| `tools-no-shell-sep` | lean | measured — `shell-separators` |
+| `tools-read-scope` | full | measured — `repeat-read` |
 | `tools-quiet-flags` | full | guard — no detector |
-| `tools-generator` | full | guard — no detector |
+| `tools-generator` | full | measured — `template-writes` |
 
 ### Thinking (`thinking`)
 
@@ -151,8 +164,10 @@ disagree, the code wins.
 |---|---|---|
 | `thinking-billed` | lean | guard — no detector |
 | `thinking-echo` | lean | measured — `thinking-echo` |
+| `thinking-no-code-draft` | lean | measured — `thinking-code-draft` |
+| `thinking-no-meta` | full | measured — `thinking-filler` |
 | `thinking-rederive` | full | measured — `thinking-rederive` |
-| `thinking-plan` | full | guard — no detector |
+| `thinking-plan` | full | measured — `thinking-plan` |
 
 ### Across turns (`cross-turn`)
 

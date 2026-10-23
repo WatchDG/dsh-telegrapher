@@ -4,6 +4,52 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] — 2026-10-23
+
+### Added
+
+- **New tool, thinking and output rules and detectors** — `tools-merge-edits`
+  (`adjacent-edits`, 29.4K tokens saved on the 50-session corpus),
+  `thinking-no-code-draft` (`thinking-code-draft`, 3.8K tokens),
+  `tools-no-shell-sep` (`shell-separators`, 1.1K tokens),
+  `tools-no-banner-comments` (`banner-comments`), `thinking-no-meta`
+  (`thinking-filler`), `response-no-apology` (`apology`), `markdown-bare-url`
+  (`duplicate-url-link`), plus detectors for `tools-read-scope` (`repeat-read`),
+  `tools-generator` (`template-writes`), `thinking-plan`, `markdown-lists`
+  (`short-list`), `markdown-backticks` (`plain-backticks`) and `response-done`
+  (`verbose-done`).
+- **Em-dash control (`control-em-dash`)** — a fourth measurement-only control,
+  refuted on 524 corpus occurrences (`0.0` tokens saved per occurrence in
+  `o200k_base`).
+- **Adaptive `mode: auto` and per-rule `disabled` list** — `auto` compiles the
+  lean guards plus only the rules whose measured `payback >= 1×` on the
+  profile's corpus; `disabled` excludes specific rule ids live from Settings or
+  YAML.
+- **Cascaded net potential and `audit`/`session` tool actions** — `analysis`
+  computes non-overlapping cascaded unit savings alongside per-rule sums; the
+  `telegrapher` tool adds `action: 'audit'` (payback recommendations) and
+  `action: 'session'` (per-session rule breakdown), and the Settings page
+  renders rule examples and per-rule toggles.
+
+### Changed
+
+- **Rebalanced `lean` tier** — promoted `tools-replace-all` (13.6× payback) and
+  `tools-description` (1.5× payback) into `lean`, and tightened the `core-hoist`
+  prompt line.
+
+### Fixed
+
+- **Cyrillic word boundaries in `filler` and `terminal-period`** — JavaScript's
+  `\b` only matches ASCII word characters, so Russian filler phrases never
+  matched and `ё`/`Ё` before a terminal period was skipped. Replaced with
+  Unicode-aware boundaries (`(?![\p{L}\p{N}_])` and `/[\p{L})]\.$/u`).
+- **Section token price in `telegrapher` tool summary** — `lib/tool.js` now reads
+  `section.tokens` from `getView()`, and switching out of `mode: 'off'` live in
+  Settings registers the prompt section without a Host restart.
+- **Same-step code lines for `reprint` and `thinking-code-draft`** —
+  `lib/digest.js` extracts code lines from inline `tool-call` blocks in
+  `assistant/message` before inspecting the message's text and reasoning units.
+
 ## [1.0.1] — 2026-10-23
 
 ### Fixed

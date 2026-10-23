@@ -26,7 +26,7 @@ import { RULES, RENDERED } from '../lib/catalogue.js'
 import { buildLedger } from '../lib/hypotheses.js'
 import { rulesText } from '../lib/rules.js'
 import { createTokenCounter } from '../lib/tiktoken.js'
-import { fmtShare, formatHypotheses, formatRules, formatSummary } from '../lib/tool.js'
+import { fmtShare, formatAudit, formatHypotheses, formatRules, formatSummary } from '../lib/tool.js'
 
 /** zstd frame magic number. A session log is a concatenation of frames. */
 const MAGIC = Buffer.from([0x28, 0xb5, 0x2f, 0xfd])
@@ -201,6 +201,7 @@ async function main() {
 
   process.stdout.write(
     `${formatSummary(report, ledger, priced.counts[0])}\n\n` +
+      `${formatAudit(report, ledger, settings)}\n\n` +
       `Rules:\n${formatRules(ledger)}\n\n` +
       `Hypotheses:\n${formatHypotheses(ledger, 40)}\n\n` +
       `Tools: ${report.tools

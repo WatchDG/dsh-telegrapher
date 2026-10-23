@@ -15,12 +15,13 @@
  * Config (all optional, read from the bundle row, editable live from the
  * Settings page thanks to volatile fields):
  *
- *   mode       'lean' | 'full' | 'off'  prompt rules (default 'lean')
- *   thinking   boolean                  include the thinking rules (default true)
- *   analysis   boolean                  session analysis routes and tool (default true)
- *   sessions   number                   newest sessions per report (default 20, max 100)
- *   encoding   string                   tiktoken encoding (default 'o200k_base')
- *   python     'auto' | path            Python executable for tiktoken (default 'auto')
+ *   mode       'lean' | 'full' | 'auto' | 'off'  prompt rules (default 'lean')
+ *   thinking   boolean                           include the thinking rules (default true)
+ *   analysis   boolean                           session analysis routes and tool (default true)
+ *   sessions   number                            newest sessions per report (default 20, max 100)
+ *   encoding   string                            tiktoken encoding (default 'o200k_base')
+ *   python     'auto' | path                     Python executable for tiktoken (default 'auto')
+ *   disabled   string[]                          rule ids excluded from the compiled section
  *
  * `tiktoken` is an optional prerequisite: without it the plugin still loads,
  * the rules still apply, and every measured number is marked as an estimate.

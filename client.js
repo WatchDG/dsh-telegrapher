@@ -28,6 +28,7 @@ window.__ModuleLoader__.load({
       modeLabel: 'Mode',
       'mode.lean': 'Lean — highest-value rules',
       'mode.full': 'Full — every measured rule',
+      'mode.auto': 'Auto — rules that pay back on this profile',
       'mode.off': 'Off — no section',
       thinkingLabel: 'Thinking rules',
       thinkingHint: 'Include the rules for reasoning text.',
@@ -53,6 +54,7 @@ window.__ModuleLoader__.load({
       statSessions: 'Sessions',
       statSteps: 'Steps',
       statOutput: 'Output tokens',
+      statPotential: 'Rule potential',
       statSection: 'Section tokens',
       massTitle: 'Where output tokens go',
       massTool: 'Tool arguments',
@@ -69,12 +71,14 @@ window.__ModuleLoader__.load({
       headerModel: 'model',
       headerRules: 'rules',
       rulesTableTitle: 'Rules with evidence',
+      headerActive: 'on',
       headerRule: 'rule',
       headerTier: 'tier',
       headerOcc: 'occ',
       headerPerSession: '/session',
       headerPayback: 'payback',
       headerStatus: 'status',
+      examplesLabel: 'Examples ({count})',
       reportFailed: 'The analysis is unavailable: {reason}',
       scanMeta: 'Scanned {scanned}/{requested} sessions in {ms}; {errors} errors',
       skipped: '{count} sessions skipped',
@@ -115,6 +119,7 @@ window.__ModuleLoader__.load({
       modeLabel: 'Режим',
       'mode.lean': 'Краткий — только самые ценные правила',
       'mode.full': 'Полный — все измеряемые правила',
+      'mode.auto': 'Авто — только окупающиеся правила профиля',
       'mode.off': 'Выкл. — секции нет',
       thinkingLabel: 'Правила обдумывания',
       thinkingHint: 'Включать правила для текста рассуждений.',
@@ -140,6 +145,7 @@ window.__ModuleLoader__.load({
       statSessions: 'Сессии',
       statSteps: 'Шаги',
       statOutput: 'Токены ответа',
+      statPotential: 'Потенциал правил',
       statSection: 'Токены секции',
       massTitle: 'Куда уходят токены ответа',
       massTool: 'Аргументы инструментов',
@@ -156,12 +162,14 @@ window.__ModuleLoader__.load({
       headerModel: 'модель',
       headerRules: 'правила',
       rulesTableTitle: 'Правила с доказательствами',
+      headerActive: 'вкл.',
       headerRule: 'правило',
       headerTier: 'уровень',
       headerOcc: 'случаи',
       headerPerSession: '/сессия',
       headerPayback: 'окупаемость',
       headerStatus: 'статус',
+      examplesLabel: 'Примеры ({count})',
       reportFailed: 'Анализ недоступен: {reason}',
       scanMeta: 'Просканировано {scanned}/{requested} сессий за {ms}; ошибок: {errors}',
       skipped: 'пропущено сессий: {count}',
@@ -375,6 +383,7 @@ window.__ModuleLoader__.load({
             },
             h('option', { value: 'lean' }, t('mode.lean')),
             h('option', { value: 'full' }, t('mode.full')),
+            h('option', { value: 'auto' }, t('mode.auto')),
             h('option', { value: 'off' }, t('mode.off')),
           ),
         ),
@@ -542,16 +551,30 @@ window.__ModuleLoader__.load({
 
     /** Rule evidence table. */
     function RulesTable(props) {
-      const { t, ledger } = props
+      const { t, ledger, status, setField, onApplied } = props
       const order = { supported: 0, inconclusive: 1, refuted: 2, unmeasured: 3 }
       const rows = (ledger ?? [])
         .filter((entry) => entry.kind === 'rule' && entry.occurrences > 0)
         .sort((a, b) => {
-          const status = (order[a.status] ?? 9) - (order[b.status] ?? 9)
-          return status !== 0 ? status : b.tokens - a.tokens
+          const statusOrder = (order[a.status] ?? 9) - (order[b.status] ?? 9)
+          return statusOrder !== 0 ? statusOrder : b.tokens - a.tokens
         })
-        .slice(0, 10)
+        .slice(0, 14)
       if (rows.length === 0) return null
+      const disabledList = Array.isArray(status?.disabled) ? status.disabled : []
+      const disabledSet = new Set(disabledList)
+      const toggleRule = (ruleId, enabled) => {
+        if (typeof setField !== 'function') return
+        const next = new Set(disabledList)
+        if (enabled) next.delete(ruleId)
+        else next.add(ruleId)
+        Promise.resolve()
+          .then(() => setField('disabled', [...next]))
+          .then(() => {
+            if (typeof onApplied === 'function') onApplied()
+          })
+          .catch(() => {})
+      }
       return h(
         'div',
         { className: 'tg-card' },
@@ -565,6 +588,7 @@ window.__ModuleLoader__.load({
             h(
               'tr',
               null,
+              setField ? h('th', null, t('headerActive')) : null,
               h('th', null, t('headerRule')),
               h('th', null, t('headerTier')),
               h('th', { className: 'tg-num' }, t('headerOcc')),
@@ -581,6 +605,19 @@ window.__ModuleLoader__.load({
               h(
                 'tr',
                 { key: entry.id },
+                setField
+                  ? h(
+                      'td',
+                      null,
+                      entry.tier
+                        ? h('input', {
+                            type: 'checkbox',
+                            checked: !disabledSet.has(entry.rule),
+                            onChange: (event) => toggleRule(entry.rule, event.target.checked),
+                          })
+                        : '—',
+                    )
+                  : null,
                 h('td', { className: 'tg-mono' }, entry.rule),
                 h('td', null, entry.tier ?? '—'),
                 h('td', { className: 'tg-num' }, String(entry.occurrences)),
@@ -603,11 +640,12 @@ window.__ModuleLoader__.load({
 
     /** The measured report block. */
     function Report(props) {
-      const { t, view, onRescan } = props
+      const { t, view, status, setField, onApplied, onRescan } = props
       const [busy, setBusy] = React.useState(false)
       const report = view?.report
       const ledger = view?.ledger ?? []
       const sessions = report?.ok ? (report.scope?.sessions ?? []).slice(0, 8) : []
+      const netPotential = report?.potential?.net ?? report?.potential?.gross ?? null
       const run = () => {
         setBusy(true)
         Promise.resolve()
@@ -634,12 +672,15 @@ window.__ModuleLoader__.load({
               h('div', { className: 'tg-stat' }, h('b', null, String(report.scannedSessions)), h('span', null, t('statSessions'))),
               h('div', { className: 'tg-stat' }, h('b', null, String(report.totals?.assistantMessages ?? 0)), h('span', null, t('statSteps'))),
               h('div', { className: 'tg-stat' }, h('b', null, fmtTokens(report.totals?.outputTokens)), h('span', null, t('statOutput'))),
+              netPotential !== null
+                ? h('div', { className: 'tg-stat' }, h('b', null, fmtTokens(netPotential)), h('span', null, t('statPotential')))
+                : null,
               h('div', { className: 'tg-stat' }, h('b', null, fmtTokens(view?.section?.tokens)), h('span', null, t('statSection'))),
             )
           : null,
         report && report.ok ? h(Mass, { t, report }) : null,
         report && report.ok ? h(Tools, { t, tools: report.tools }) : null,
-        h(RulesTable, { t, ledger }),
+        h(RulesTable, { t, ledger, status, setField, onApplied }),
         sessions.length > 0
           ? h(
               'details',
@@ -779,6 +820,24 @@ window.__ModuleLoader__.load({
                 }),
               ),
               h('div', { className: 'tg-muted' }, entry.reason),
+              Array.isArray(entry.examples) && entry.examples.length > 0
+                ? h(
+                    'details',
+                    null,
+                    h(
+                      'summary',
+                      { className: 'tg-muted tg-mono' },
+                      fill(t('examplesLabel'), { count: entry.examples.length }),
+                    ),
+                    h(
+                      'ul',
+                      { className: 'tg-list tg-mono tg-muted' },
+                      ...entry.examples.map((ex, idx) =>
+                        h('li', { key: idx }, `${ex.note ? `${ex.note}: ` : ''}${ex.snippet}`),
+                      ),
+                    ),
+                  )
+                : null,
             ),
           ),
           ...proposals.map((entry) =>
@@ -885,7 +944,14 @@ window.__ModuleLoader__.load({
           onApplied: refresh,
         }),
         h('h3', { className: 'tg-sub' }, t('reportTitle')),
-        h(Report, { t, view, onRescan: rescan }),
+        h(Report, {
+          t,
+          view,
+          status,
+          setField: props.setField,
+          onApplied: refresh,
+          onRescan: rescan,
+        }),
         h('h3', { className: 'tg-sub' }, t('ledgerTitle')),
         h(Ledger, { t, ledger: view?.ledger }),
         h('h3', { className: 'tg-sub' }, t('diagTitle')),

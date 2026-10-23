@@ -24,8 +24,10 @@
 по выбранному режиму:
 
 - **lean** (по умолчанию) — языковая политика плюс самые ценные правила для
-  ответа и обдумывания, 318 токенов на запрос в этом каталоге;
-- **full** — все измеряемые правила плюс заголовки разделов, 764 токена;
+  ответа, инструментов и обдумывания, 390 токенов на запрос в этом каталоге;
+- **full** — все измеряемые правила плюс заголовки разделов, 868 токенов;
+- **auto** — базовые защиты плюс только те правила, чья измеренная окупаемость
+  на сессиях профиля `payback >= 1×` (до первого скана работает как `lean`);
 - **off** — секции нет.
 
 Правила закрывают три стока, за которые платит сессия разработки: аргументы
@@ -132,7 +134,7 @@ py -3 -c "import tiktoken; print(tiktoken.__version__)"
 
 ## Секция по умолчанию
 
-`mode: lean` отрисовывает ровно это (318 токенов в `o200k_base`):
+`mode: lean` отрисовывает ровно это (390 токенов в `o200k_base`):
 
 ```text
 ## Token economy (telegrapher)
@@ -152,8 +154,13 @@ These rules govern the text you write and never override correctness.
 - Report checks as `N/N pass`, `N/M fail`, `clean`; don't echo tool output.
 - Minimal unique `old_string`: the changed line, one context line only on a collision.
 - Edit existing files; a second write of a path already written means edit. Rewrite only for a new file or a replacement above half the content.
+- `replace_all` instead of N identical edits.
+- Combine adjacent edits to the same file in one turn into a single edit call.
+- Shell descriptions: two to five words, active voice.
+- No decorative echo/printf separators in shell commands.
 - Thinking is billed output: cut restatement and re-derivation, never depth.
 - Don't narrate a tool result in thinking.
+- Never draft full code blocks in thinking before writing or editing: emit code once in the tool call.
 ```
 
 Секция ставится сразу после руководства по инструментам оболочки. Список держит
@@ -200,33 +207,38 @@ These rules govern the text you write and never override correctness.
 
 | Метрика | Значение |
 |---|---|
-| Сессии / шаги ассистента | 50 / 5 062 |
-| Записанные токены ответа | 3,1 млн |
-| Аргументы инструментов | 79% (1,5 млн) |
-| Обдумывание | 16% (287,5 тыс.) |
-| Текст ответа | 5% (98,6 тыс.) |
-| Крупнейший инструмент | `edit` 42%, `write` 26%, `pwsh` 6% |
-| Цена краткой секции | 318 токенов на запрос |
-| Измеренный потенциал поддержанных правил | 72,0 тыс. токенов (2% ответа), правила пересекаются |
+| Сессии / шаги ассистента | 50 / 5 163 |
+| Записанные токены ответа | 3,2 млн |
+| Аргументы инструментов | 77% (1,5 млн) |
+| Обдумывание | 17% (339,2 тыс.) |
+| Текст ответа | 5% (101,5 тыс.) |
+| Крупнейший инструмент | `edit` 41%, `write` 26%, `pwsh` 6%, `read` 2% |
+| Цена краткой секции | 390 токенов на запрос |
+| Измеренный потенциал поддержанных правил | 108,3 тыс. токенов (3% ответа), правила пересекаются |
 
 По правилам (случаи, токены, вердикт):
 
 | Правило | Случаи | Токены | Вердикт |
 |---|---|---|---|
-| `tools-edit-anchor` | 1 199 | 58,4 тыс. | supported — 49 токенов на широкий якорь, 17 сессий |
-| `tools-replace-all` | 35 | 7,3 тыс. | supported |
-| `markdown-markup` | 184 | 1,6 тыс. | supported |
-| `core-alias` | 22 | 1,6 тыс. | supported |
-| `tools-description` | 470 | 878 | supported |
-| `core-hoist` | 7 | 607 | supported, но окупаемость 0,5× — строка дороже, чем экономит |
+| `tools-edit-anchor` | 1 222 | 59,8 тыс. | supported — 49 токенов на широкий якорь, 17 сессий (окупаемость 63,0×) |
+| `tools-merge-edits` | 463 | 29,4 тыс. | supported — смежные правки одного файла в одном ходе, 18 сессий (34,6×) |
+| `tools-replace-all` | 37 | 7,5 тыс. | supported — окупаемость 13,6× |
+| `thinking-no-code-draft` | 36 | 3,8 тыс. | supported — черновик кода в обдумывании перед записью/правкой, 4 сессии (3,6×) |
+| `markdown-markup` | 184 | 1,6 тыс. | supported — окупаемость 2,0× |
+| `core-alias` | 22 | 1,6 тыс. | supported — окупаемость 1,0× |
+| `tools-no-shell-sep` | 122 | 1,1 тыс. | supported — декоративные разделители в командах, 8 сессий (2,0×) |
+| `tools-description` | 494 | 925 | supported — окупаемость 1,5× |
+| `core-hoist` | 7 | 607 | supported, окупаемость 0,6× |
 | `thinking-rederive` | 6 | 436 | supported |
 | `response-no-next-steps` | 3 | 417 | supported |
-| `core-narration` | 20 | 336 | supported |
+| `core-narration` | 21 | 342 | supported |
+| `tools-read-scope` | 12 | 304 | supported — повторные чтения неизменённого файла |
 | `markdown-tables` | 14 | 248 | supported |
 | `response-answer-first` | 4 | 220 | supported |
-| `markdown-terminal-period` | 569 | 564 | inconclusive — 1,0 токена на случай |
-| `control-arrow` | 144 | 21 | refuted — стрелка и точка стоят по одному токену |
-| `control-blank-lines` | 99 | 3 | refuted — измерено как нулевая экономия |
+| `markdown-terminal-period` | 572 | 567 | inconclusive — 1,0 токена на случай |
+| `control-em-dash` | 524 | 0 | refuted — тире и дефис стоят по одному токену |
+| `control-arrow` | 147 | 21 | refuted — стрелка и точка стоят по одному токену |
+| `control-blank-lines` | 104 | 3 | refuted — измерено как нулевая экономия |
 | `control-abbrev` | 3 | 0 | refuted — измерено как нулевая экономия |
 
 Строка про стрелку примечательна: унаследованный каталог держал «без стрелок»
@@ -246,12 +258,13 @@ H1 и H2 на этом корпусе — `unmeasured`: плагин не был
 
 | Поле | Тип | По умолчанию | Значение |
 |---|---|---|---|
-| `mode` | `'lean' \| 'full' \| 'off'` | `'lean'` | Режим секции промпта. `off` не регистрирует секцию. |
+| `mode` | `'lean' \| 'full' \| 'auto' \| 'off'` | `'lean'` | Режим секции промпта. `auto` оставляет правила с `payback >= 1×`; `off` не регистрирует секцию. |
 | `thinking` | boolean | `true` | Включать правила обдумывания. |
 | `analysis` | boolean | `true` | Отдавать измеренный отчёт. Когда выключено, инструмент отвечает, что анализ отключён. |
 | `sessions` | number | `20` | Сколько последних сессий сканирует один отчёт (1–100). |
 | `encoding` | string | `'o200k_base'` | Любое имя кодировки tiktoken. |
 | `python` | string | `'auto'` | `'auto'` или путь к Python 3 с tiktoken. |
+| `disabled` | `string[]` | `[]` | Список id правил, исключённых из собираемой секции. |
 
 ```yaml
 - id: telegrapher
@@ -274,10 +287,12 @@ H1 и H2 на этом корпусе — `unmeasured`: плагин не был
 
 | Действие | Ответ |
 |---|---|
-| `summary` | итоги корпуса, распределение стоков, главные инструменты, поддержанные правила, вердикт H1/H2, цена секции |
+| `summary` | итоги корпуса, распределение стоков, главные инструменты, поддержанные правила (сумма и чистый потенциал), вердикт H1/H2, цена секции |
 | `rules` | таблица правил: случаи, токены, токены на сессию, окупаемость, вердикт |
 | `hypotheses` | журнал: сначала эмпирические утверждения, затем правила, затем непокрытые стоки |
+| `audit` | аудит окупаемости: какие правила окупаются (`>= 1×`), а какие в `lean` ниже `1×` |
 | `sessions` | последние просканированные сессии с моделью, шагами, ответом и обдумыванием |
+| `session` | детальный разбор одной сессии по `session` id или префиксу (по умолчанию последней) |
 | `measure` | счёт tiktoken для переданных `texts` и пар `[before, after]` |
 
 `measure` — способ агента проверить кандидатную правку до предложения правила:

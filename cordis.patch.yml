@@ -3,12 +3,13 @@
 #
 #   - id: telegrapher
 #     config:
-#       mode: full                 # lean (default) | full | off
+#       mode: full                 # lean (default) | full | auto | off
 #       thinking: true             # include the thinking rules
 #       analysis: true             # session analysis routes and the agent tool
 #       sessions: 20               # newest sessions scanned per report
 #       encoding: o200k_base       # tiktoken encoding used for measurement
 #       python: auto               # auto | python executable path
+#       disabled: []               # rule ids excluded from the compiled section
 - insert:
     - id: telegrapher
       name: dsh-telegrapher

@@ -50,6 +50,8 @@ test('filler: drops pleasantries and never touches code', () => {
   const unit = textUnit("Sure! I'd be happy to help. The bug is in auth.")
   const result = hit('filler', unit)
   assert.equal(result.after, 'The bug is in auth.')
+  const russian = hit('filler', textUnit('Конечно! Я помогу. Ошибка в модуле авторизации, на самом деле всё просто.'))
+  assert.equal(russian.after, 'Ошибка в модуле авторизации, всё просто.')
   miss('filler', textUnit('```\nSure! I would be happy to help.\n```'))
   miss('filler', textUnit('The bug is in auth.'))
 })
@@ -96,6 +98,7 @@ test('table: rows become inline lists', () => {
 
 test('terminal-period: only a one-line fragment loses its period', () => {
   assert.equal(hit('terminal-period', textUnit('Done.')).after, 'Done')
+  assert.equal(hit('terminal-period', textUnit('Готово, всё.')).after, 'Готово, всё')
   miss('terminal-period', textUnit('Read lib/plugin.js.'))
   miss('terminal-period', textUnit('line one\nline two.'))
 })
@@ -291,6 +294,135 @@ test('repeat-paragraph: a paragraph repeated from an earlier turn is dropped', (
   const earlier = `intro ${'text '.repeat(60)}\n${paragraph}`
   const result = hit('repeat-paragraph', textUnit(`New fact.\n\n${paragraph}`, { earlierText: earlier }))
   assert.equal(result.after, 'New fact.')
+})
+
+test('verbose-done: one-sentence mechanical completion collapses to Done', () => {
+  assert.equal(
+    hit('verbose-done', textUnit('I have successfully updated the configuration file.')).after,
+    'Done.',
+  )
+  assert.equal(
+    hit('verbose-done', textUnit('Я успешно обновил конфигурационный файл.')).after,
+    'Готово.',
+  )
+  miss('verbose-done', textUnit('Updated auth.ts:42 to check the token expiry.'))
+})
+
+test('apology: strips self-blame before the fix', () => {
+  const result = hit('apology', textUnit('Sorry about that! The path is lib/index.js.'))
+  assert.equal(result.after, 'The path is lib/index.js.')
+  const ru = hit('apology', textUnit('Извините за путаницу. Путь: lib/index.js.'))
+  assert.equal(ru.after, 'Путь: lib/index.js.')
+})
+
+test('short-list: two short items become inline', () => {
+  const result = hit('short-list', textUnit('Changed:\n- added tests\n- updated docs'))
+  assert.equal(result.after, 'Changed:\nadded tests; updated docs')
+  miss('short-list', textUnit('- one\n- two\n- three'))
+})
+
+test('plain-backticks: removes backticks around conversational words', () => {
+  const result = hit('plain-backticks', textUnit('Status is `clean` and `done`.'))
+  assert.equal(result.after, 'Status is clean and done.')
+  miss('plain-backticks', textUnit('Call `buildDigest` in `lib/digest.js`.'))
+})
+
+test('duplicate-url-link: collapses [url](url) to bare url', () => {
+  const result = hit('duplicate-url-link', textUnit('See [https://example.com/a](https://example.com/a).'))
+  assert.equal(result.after, 'See https://example.com/a.')
+  miss('duplicate-url-link', textUnit('See [docs](https://example.com/a).'))
+})
+
+test('em-dash: replaces em-dash with hyphen outside fences', () => {
+  const result = hit('em-dash', textUnit('One — two'))
+  assert.equal(result.after, 'One - two')
+  miss('em-dash', textUnit('```\nOne — two\n```'))
+})
+
+test('thinking-code-draft: drops code drafted in thinking before a write/edit', () => {
+  const stepCodeLines = new Set(['export const x = compute(1)', 'export const y = compute(2)'])
+  const result = hit(
+    'thinking-code-draft',
+    thinkingUnit('Plan:\n```js\nexport const x = compute(1)\nexport const y = compute(2)\n```\nNow write.', {
+      stepCodeLines,
+    }),
+  )
+  assert.equal(result.after.includes('export const x'), false)
+  assert.ok(result.after.includes('Now write.'))
+})
+
+test('thinking-filler: strips conversational self-talk in reasoning', () => {
+  const result = hit(
+    'thinking-filler',
+    thinkingUnit("Okay, let's see what we have here. The cache key misses the port."),
+  )
+  assert.equal(result.after, 'The cache key misses the port.')
+})
+
+test('thinking-plan: drops plan steps already written earlier', () => {
+  const step1 = 'Update the configuration schema with the new mode option'
+  const step2 = 'Add unit tests covering the fallback behavior and routes'
+  const earlier = `Here is the plan:\n1. ${step1}\n2. ${step2}\n${'context '.repeat(20)}`
+  const result = hit(
+    'thinking-plan',
+    thinkingUnit(`1. ${step1}\n2. ${step2}\nNow executing step 1.`, { earlierText: earlier }),
+  )
+  assert.equal(result.after, 'Now executing step 1.')
+})
+
+test('adjacent-edits: consecutive edits to the same file in one turn are flagged', () => {
+  const hits = DETECTORS_BY_ID.get('adjacent-edits').apply({
+    calls: [
+      { turn: 1, name: 'edit', args: { file_path: 'a.ts', old_string: 'a', new_string: 'b' }, raw: '{"1":1}' },
+      { turn: 1, name: 'edit', args: { file_path: 'a.ts', old_string: 'c', new_string: 'd' }, raw: '{"2":2}' },
+    ],
+    texts: [],
+  })
+  assert.equal(hits.length, 1)
+  assert.equal(hits[0].units, 1)
+})
+
+test('banner-comments: strips ASCII divider comments from new code', () => {
+  const result = hit(
+    'banner-comments',
+    toolUnit('write', { file_path: 'a.js', content: '// ============\nconst x = 1\n' }),
+  )
+  assert.equal(result.after, 'const x = 1\n')
+})
+
+test('shell-separators: strips decorative echo dividers in shell commands', () => {
+  const result = hit(
+    'shell-separators',
+    toolUnit('pwsh', { command: 'npm test; echo "========"; git status' }),
+  )
+  assert.equal(result.after.includes('===='), false)
+  assert.ok(result.after.includes('npm test'))
+})
+
+test('repeat-read: flags re-reading an unchanged file', () => {
+  const raw = JSON.stringify({ file_path: 'a.ts' })
+  const hits = DETECTORS_BY_ID.get('repeat-read').apply({
+    calls: [
+      { name: 'read', args: { file_path: 'a.ts' }, raw },
+      { name: 'read', args: { file_path: 'a.ts' }, raw },
+    ],
+    texts: [],
+  })
+  assert.equal(hits.length, 1)
+})
+
+test('template-writes: flags three similar file writes in one session', () => {
+  const base = Array.from({ length: 8 }, (_, i) => `export const line${i} = ${i}`).join('\n')
+  const hits = DETECTORS_BY_ID.get('template-writes').apply({
+    calls: [
+      { name: 'write', args: { file_path: 'a.js', content: `${base}\nexport const id = "a"` }, raw: '{}' },
+      { name: 'write', args: { file_path: 'b.js', content: `${base}\nexport const id = "b"` }, raw: '{}' },
+      { name: 'write', args: { file_path: 'c.js', content: `${base}\nexport const id = "c"` }, raw: '{}' },
+    ],
+    texts: [],
+  })
+  assert.equal(hits.length, 1)
+  assert.equal(hits[0].units, 2)
 })
 
 test('detectors never fire on empty input', () => {

@@ -5,9 +5,11 @@ import assert from 'node:assert/strict'
 import {
   fmtShare,
   fmtTokens,
+  formatAudit,
   formatHypotheses,
   formatMeasure,
   formatRules,
+  formatSessionDetail,
   formatSessions,
   formatSummary,
 } from '../lib/tool.js'
@@ -144,4 +146,14 @@ test('measure prints texts and pairs', () => {
   assert.match(text, /"one two three": 3 tokens/)
   assert.match(text, /before 2 → after 1: delta 1 \(50%\)/)
   assert.equal(formatMeasure({}), 'Nothing to measure: pass texts or pairs.')
+})
+
+test('audit and session views report payback recommendations and per-session detail', () => {
+  const audit = formatAudit(report, ledger, { mode: 'lean' })
+  assert.match(audit, /Paying back \(>=1\.0x\): tools-edit-anchor \(4\.5x\)/)
+  assert.match(audit, /Lean-tier rules below 1\.0x on this corpus: markdown-markup \(0\.4x\)/)
+
+  const detail = formatSessionDetail(report, 'session-1')
+  assert.match(detail, /Session session-1/)
+  assert.match(detail, /Steps: 30/)
 })
