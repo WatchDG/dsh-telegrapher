@@ -1,0 +1,14 @@
+# Telegrapher token economy for DeepSeek Harness.
+# Override this row in the profile's own patch layer to tune behavior, e.g.:
+#
+#   - id: telegrapher
+#     config:
+#       mode: full                 # lean (default) | full | off
+#       thinking: true             # include the thinking rules
+#       analysis: true             # session analysis routes and the agent tool
+#       sessions: 20               # newest sessions scanned per report
+#       encoding: o200k_base       # tiktoken encoding used for measurement
+#       python: auto               # auto | python executable path
+- insert:
+    - id: telegrapher
+      name: dsh-telegrapher

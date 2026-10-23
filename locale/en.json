@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Telegrapher Token Economy",
+    "description": "Cuts output and thinking tokens with prompt rules, then measures every rule against real DSH sessions with tiktoken."
+  }
+}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Telegrapher">
+  <!-- Telegraph key: three dots and a dash, compressed into a downward chevron. -->
+  <rect x="0.5" y="0.5" width="63" height="63" rx="14" fill="#0B1220" stroke="#7AD1FF" stroke-opacity="0.24" stroke-width="1"/>
+  <g fill="#7AD1FF">
+    <circle cx="15" cy="24" r="3.4"/>
+    <circle cx="25.5" cy="24" r="3.4"/>
+    <circle cx="36" cy="24" r="3.4"/>
+    <rect x="44.5" y="20.6" width="13" height="6.8" rx="3.4"/>
+  </g>
+  <path d="M22 38.5 L32 48.5 L42 38.5" fill="none" stroke="#EAF6FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/>
+  <path d="M32 33.5 L32 42.5" stroke="#EAF6FF" stroke-width="4" stroke-linecap="round" opacity="0.92"/>
+</svg>

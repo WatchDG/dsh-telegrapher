@@ -1,0 +1,9 @@
+dsh-telegrapher
+Copyright 2026 Baranov Grigoriy Vladimirovich
+
+This product includes software developed at DeepSeek Harness
+(https://www.deepseek.com/en/harness/).
+
+The plugin optionally runs tiktoken (https://github.com/openai/tiktoken),
+licensed under the MIT License and distributed separately by OpenAI. No part of
+tiktoken is bundled with this package.
