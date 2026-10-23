@@ -35,8 +35,7 @@ for stream in (sys.stdin, sys.stdout):
 def fail(kind, error, **extra):
     payload = {"fatal": kind, "error": str(error)}
     payload.update(extra)
-    print(json.dumps(payload), flush=True)
-    return None
+    return payload
 
 
 def load_encoder(encoding):

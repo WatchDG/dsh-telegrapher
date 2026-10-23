@@ -1,8 +1,16 @@
 // Token measurement: the tiktoken bridge and its estimator fallback.
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
 
-import { countOnce, createTokenCounter, estimateTokens, pythonCandidates } from '../lib/tiktoken.js'
+import {
+  SCRIPT_PATH,
+  countOnce,
+  createTokenCounter,
+  estimateTokens,
+  parseBridgeLine,
+  pythonCandidates,
+} from '../lib/tiktoken.js'
 
 test('python candidates follow the platform and the configuration', () => {
   const auto = pythonCandidates('auto')
@@ -22,6 +30,41 @@ test('the estimator is monotone and script-aware', () => {
   assert.ok(cyrillic > 0 && latin > 0)
   assert.ok(estimateTokens('1234567890') > 0)
   assert.ok(estimateTokens('```js\nconst x = 1\n```') >= 5)
+})
+
+test('the bridge ignores lines that are not JSON objects', () => {
+  assert.equal(parseBridgeLine('null'), null)
+  assert.equal(parseBridgeLine('[]'), null)
+  assert.equal(parseBridgeLine('42'), null)
+  assert.equal(parseBridgeLine('"ready"'), null)
+  assert.equal(parseBridgeLine('not json'), null)
+  assert.equal(parseBridgeLine(''), null)
+  assert.deepEqual(parseBridgeLine('{"ready":true}'), { ready: true })
+})
+
+test('a fatal bridge print is exactly one JSON line', (t) => {
+  const args = ['-u', SCRIPT_PATH, '--probe', '--encoding', 'definitely-not-an-encoding']
+  let run = null
+  for (const candidate of pythonCandidates('auto')) {
+    const result = spawnSync(candidate.command, [...candidate.args, ...args], {
+      encoding: 'utf8',
+      timeout: 30_000,
+    })
+    if (result.error) continue
+    run = result
+    break
+  }
+  if (run === null) {
+    t.skip('no Python interpreter is available')
+    return
+  }
+  const lines = String(run.stdout ?? '')
+    .split('\n')
+    .filter((line) => line.trim() !== '')
+  assert.equal(run.status, 2, 'a fatal bridge exits with code 2')
+  assert.equal(lines.length, 1, `expected one JSON line, got ${JSON.stringify(lines)}`)
+  const payload = JSON.parse(lines[0])
+  assert.match(String(payload.fatal), /tiktoken-missing|encoding-unavailable/)
 })
 
 test('a counter starts unusable and reports why', () => {

@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] — 2026-10-23
+
+### Fixed
+
+- **The tiktoken bridge printed its fatal payload twice.** The Python bridge
+  printed the failure object and then `null`, and the second line crashed the
+  readline handler with `Cannot read properties of null (reading 'ready')` on
+  any Host without tiktoken — including a CI job that runs the tests without
+  installing it. The failure is printed once now, exits with code 2, and the
+  Node side ignores any line that is not a JSON object instead of trusting the
+  tokenizer process to be well-behaved.
+
+- **The fatal path is covered.** A test runs the bridge with an unknown encoding
+  and asserts exactly one JSON line; a unit test feeds `null`, arrays, numbers
+  and garbage to the line parser.
+
 ## [1.0.0] — 2026-10-23
 
 First release.
@@ -44,4 +60,5 @@ First release.
 - Apache-2.0 license, NOTICE, English and Russian READMEs, CI on Node 20/22/24
   for Linux and Windows, and a `tiktoken` CI job.
 
+[1.0.1]: https://github.com/WatchDG/dsh-telegrapher/releases/tag/v1.0.1
 [1.0.0]: https://github.com/WatchDG/dsh-telegrapher/releases/tag/v1.0.0
