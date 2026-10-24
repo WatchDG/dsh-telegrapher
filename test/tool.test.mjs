@@ -12,6 +12,7 @@ import {
   formatSessionDetail,
   formatSessions,
   formatSummary,
+  formatWords,
 } from '../lib/tool.js'
 
 const report = {
@@ -156,4 +157,37 @@ test('audit and session views report payback recommendations and per-session det
   const detail = formatSessionDetail(report, 'session-1')
   assert.match(detail, /Session session-1/)
   assert.match(detail, /Steps: 30/)
+
+  const wordsOut = formatWords({
+    ...report,
+    words: {
+      totalUnique: 2,
+      totalOccurrences: 5,
+      unmatchedOccurrences: 5,
+      items: [
+        {
+          term: 'соответственно',
+          ngram: 1,
+          chars: 14,
+          bpeTokens: 4,
+          occurrences: 5,
+          unmatched: 5,
+          sessions: 3,
+          unmatchedSessions: 3,
+          totalTokens: 20,
+          unmatchedTokens: 20,
+          channels: {
+            thinking: { raw: 0, unmatched: 0, sessions: 0 },
+            text: { raw: 5, unmatched: 5, sessions: 3 },
+          },
+          stopword: false,
+          suggestion: { action: 'exclude', replacement: '', ruleHint: 'core-filler', reason: 'filler' },
+          snippets: [{ session: 's1', channel: 'text', text: 'Соответственно проверим тест.', tokens: 5 }],
+        },
+      ],
+    },
+  })
+  assert.match(wordsOut, /соответственно/)
+  assert.match(wordsOut, /exclude/)
+  assert.match(wordsOut, /Context fragments:/)
 })

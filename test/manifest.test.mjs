@@ -23,6 +23,7 @@ const REQUIRED_FILES = [
   'lib/rules.js',
   'lib/tiktoken.js',
   'lib/tool.js',
+  'lib/words.js',
   'tools/tiktoken_server.py',
   'scripts/analyze-sessions.mjs',
   'cordis.patch.yml',

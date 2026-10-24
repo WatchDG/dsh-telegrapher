@@ -125,6 +125,10 @@ test('narration: a status line before a tool call disappears', () => {
   assert.equal(typo.after, 'check the config first.')
   const lead = hit('narration', textUnit('Let me check the config first.', { hasToolCalls: false }))
   assert.equal(lead.after, 'check the config first.')
+  const nowStep = hit('narration', textUnit('Now update PortDescriptor and the port constructors:', { hasToolCalls: true }))
+  assert.equal(nowStep.after, '')
+  const ruTail = hit('narration', textUnit('Типы синхронизированы — проверяю сборку ядра.', { hasToolCalls: true }))
+  assert.equal(ruTail.after, 'Типы синхронизированы')
 })
 
 test('tool-echo: lines copied from the tool result are dropped', () => {
@@ -368,6 +372,11 @@ test('thinking-narration: strips intent lead-ins and tool-call announcements in 
   assert.equal(trailing.after, 'The schema is missing a field.')
   const pure = hit('thinking-narration', thinkingUnit('Let me read lib/config.js.', { hasToolCalls: true }))
   assert.equal(pure.after, '')
+  const midClause = hit(
+    'thinking-narration',
+    thinkingUnit('While that runs, let me examine the call sites — let me look at that test.'),
+  )
+  assert.equal(midClause.after, 'While that runs, examine the call sites — look at that test.')
 })
 
 test('thinking-filler: strips conversational self-talk and interjections in reasoning', () => {
@@ -378,9 +387,9 @@ test('thinking-filler: strips conversational self-talk and interjections in reas
   assert.equal(result.after, 'The cache key misses the port.')
   const pivots = hit(
     'thinking-filler',
-    thinkingUnit('Wait — the token is null. Hmm, check the header. Oops: wrong offset.'),
+    thinkingUnit('Wait — the token is null. Hmm, check the header. Oops: wrong offset. Actually, simpler: pass null.'),
   )
-  assert.equal(pivots.after, 'the token is null. check the header. wrong offset.')
+  assert.equal(pivots.after, 'the token is null. check the header. wrong offset. simpler: pass null.')
   miss('thinking-filler', thinkingUnit('Wait for the child process to exit before closing.'))
 })
 

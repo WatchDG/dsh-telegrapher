@@ -174,8 +174,8 @@ controlled. The report says so, and the ledger marks the confidence as
 | Where | How |
 |---|---|
 | Settings page | Open **Settings → Telegrapher**, then **Rescan**. |
-| Agent | `telegrapher` tool, `action: summary` / `rules` / `hypotheses` / `sessions` / `measure`. |
-| Offline | `node scripts/analyze-sessions.mjs --sessions 50 [--json]` against `$DSH_HOME/sessions` (Node 22.15+ for zstd). |
+| Agent | `telegrapher` tool, `action: summary` / `rules` / `hypotheses` / `sessions` / `session` / `audit` / `words` / `measure`. |
+| Offline | `node scripts/analyze-sessions.mjs --sessions 50 [--json] [--words 20] [--min-chars 4] [--candidates]` against `$DSH_HOME/sessions` (Node 22.15+ for zstd). |
 | Tests | `npm run test:unit` for thresholds and fixtures; `npm run test:integration` for the bridge. |
 
 The corpus results measured with this pipeline are in

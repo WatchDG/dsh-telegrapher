@@ -95,6 +95,66 @@ window.__ModuleLoader__.load({
       payback: 'payback {value}×',
       proposalsTitle: 'Uncovered sinks',
       proposalShare: '{share} of measured output',
+      wordsTitle: 'Word frequency & rule workbench',
+      wordsIntro:
+        'Counts words and short phrases in prose (excluding code fences, inline code and paths), filters by length and BPE token cost, and shows real session fragments so you can evaluate rules to exclude, shorten or rephrase noisy words.',
+      wordsChannelLabel: 'Channel',
+      'wordsChannel.all': 'All prose (thinking + reply)',
+      'wordsChannel.thinking': 'Thinking only',
+      'wordsChannel.text': 'Reply text only',
+      wordsScopeLabel: 'Text slice',
+      'wordsScope.unmatched': 'After active rules (unmatched)',
+      'wordsScope.raw': 'All prose (before rules)',
+      wordsNgramLabel: 'Unit',
+      'wordsNgram.all': 'Words & phrases (1–3)',
+      'wordsNgram.1': 'Single words (1)',
+      'wordsNgram.2': '2-word phrases',
+      'wordsNgram.3': '3-word phrases',
+      wordsMinCharsLabel: 'Min length (chars)',
+      wordsMaxCharsLabel: 'Max length (0 = any)',
+      wordsMinTokensLabel: 'Min BPE tokens',
+      wordsLimitLabel: 'Top N',
+      wordsSortLabel: 'Sort by',
+      'wordsSort.totalTokens': 'Token mass (freq × BPE)',
+      'wordsSort.occurrences': 'Frequency (occurrences)',
+      'wordsSort.chars': 'Word length (chars)',
+      'wordsSort.bpeTokens': 'BPE tokens per word',
+      wordsSearchLabel: 'Search word or phrase',
+      wordsSearchPlaceholder: 'e.g. actually, соответственно…',
+      wordsHideStopwords: 'Hide grammatical stopwords (prepositions, conjunctions)',
+      wordsOnlyCandidates: 'Only flagged filler / cliché candidates',
+      wordsHeaderTerm: 'word / phrase',
+      wordsHeaderChars: 'len',
+      wordsHeaderBpe: 'bpe',
+      wordsHeaderOcc: 'occ',
+      wordsHeaderSess: 'sess',
+      wordsHeaderMass: 'tokens',
+      wordsHeaderAction: 'rule hint',
+      wordsHeaderContext: 'context',
+      wordsInspectBtn: 'Fragments ({count})',
+      wordsEmpty: 'No words match the current filters.',
+      'wordsAction.exclude': 'exclude',
+      'wordsAction.shorten': 'shorten',
+      'wordsAction.rephrase': 'rephrase',
+      wordsWorkbenchTitle: 'Context & rule workbench: "{term}"',
+      wordsWorkbenchMeta: '{chars} chars · {bpe} BPE tokens · {occurrences} occurrences across {sessions} sessions · {tokens} total tokens',
+      wordsFragmentsTitle: 'Fragments where "{term}" appeared (click to load into rule tester)',
+      wordsActionTypeLabel: 'Rule action',
+      'wordsActionOption.exclude': 'Exclude (delete word/phrase)',
+      'wordsActionOption.shorten': 'Shorten (replace with shorter form)',
+      'wordsActionOption.rephrase': 'Rephrase (custom rewrite of fragment)',
+      wordsReplacementLabel: 'Replacement (for shorten / rephrase)',
+      wordsReplacementPlaceholder: 'Shorter word or leave empty to exclude',
+      wordsBeforeLabel: 'Fragment before (from session)',
+      wordsAfterLabel: 'Fragment after rule',
+      wordsDraftRuleLabel: 'Candidate prompt rule line',
+      wordsDraftDetectorLabel: 'Detector pattern (lib/detect.js)',
+      wordsMeasureBtn: 'Measure in tiktoken',
+      wordsMeasuring: 'Measuring…',
+      wordsMeasureResult: 'Fragment: {before} → {after} tokens (delta {delta})',
+      wordsCorpusProjection: 'Corpus projection ({occurrences}× across {sessions} sessions): ~{totalSaved} tokens saved (~{perSession}/session)',
+      wordsPaybackStandalone: 'As new prompt line ({ruleTokens} tok): payback {payback}×',
+      wordsPaybackExtend: 'Added to existing rule ({ruleHint}): near-zero prompt cost',
       diagTitle: 'Diagnostics',
       tokenizerLabel: 'Tokenizer',
       tokenizerExact: 'tiktoken {version} · {encoding}',
@@ -186,6 +246,66 @@ window.__ModuleLoader__.load({
       payback: 'окупаемость {value}×',
       proposalsTitle: 'Непокрытые стоки',
       proposalShare: '{share} измеренного вывода',
+      wordsTitle: 'Частота слов и проработка правил',
+      wordsIntro:
+        'Подсчитывает частоту слов и коротких фраз в прозе (без блоков кода, инлайн-кода и путей), фильтрует по длине и цене в BPE-токенах и показывает реальные фрагменты из сессий для проработки правил об исключении, сокращении или перефразировании «мусорных» слов.',
+      wordsChannelLabel: 'Канал',
+      'wordsChannel.all': 'Вся проза (обдумывание + ответ)',
+      'wordsChannel.thinking': 'Только обдумывание',
+      'wordsChannel.text': 'Только текст ответа',
+      wordsScopeLabel: 'Срез текста',
+      'wordsScope.unmatched': 'Непокрытый остаток (после правил)',
+      'wordsScope.raw': 'Весь текст (до правил)',
+      wordsNgramLabel: 'Единица',
+      'wordsNgram.all': 'Слова и фразы (1–3)',
+      'wordsNgram.1': 'Одиночные слова (1)',
+      'wordsNgram.2': 'Фразы из 2 слов',
+      'wordsNgram.3': 'Фразы из 3 слов',
+      wordsMinCharsLabel: 'Мин. длина (симв.)',
+      wordsMaxCharsLabel: 'Макс. длина (0 = любая)',
+      wordsMinTokensLabel: 'Мин. BPE-токенов',
+      wordsLimitLabel: 'Топ N',
+      wordsSortLabel: 'Сортировка',
+      'wordsSort.totalTokens': 'По токен-массе (частота × BPE)',
+      'wordsSort.occurrences': 'По частоте (вхождения)',
+      'wordsSort.chars': 'По длине (символы)',
+      'wordsSort.bpeTokens': 'По цене слова (BPE-токены)',
+      wordsSearchLabel: 'Поиск слова или фразы',
+      wordsSearchPlaceholder: 'напр. соответственно, actually…',
+      wordsHideStopwords: 'Скрыть служебные слова (предлоги, союзы, местоимения)',
+      wordsOnlyCandidates: 'Только кандидаты в «мусор» (филлеры и штампы)',
+      wordsHeaderTerm: 'слово / фраза',
+      wordsHeaderChars: 'дл.',
+      wordsHeaderBpe: 'BPE',
+      wordsHeaderOcc: 'част.',
+      wordsHeaderSess: 'сесс.',
+      wordsHeaderMass: 'токены',
+      wordsHeaderAction: 'рекомендация',
+      wordsHeaderContext: 'контекст',
+      wordsInspectBtn: 'Фрагменты ({count})',
+      wordsEmpty: 'Нет слов, подходящих под выбранные фильтры.',
+      'wordsAction.exclude': 'исключить',
+      'wordsAction.shorten': 'сократить',
+      'wordsAction.rephrase': 'перефразировать',
+      wordsWorkbenchTitle: 'Контекст и проработка правила: «{term}»',
+      wordsWorkbenchMeta: 'длина {chars} симв. · {bpe} BPE-ток. · {occurrences} раз в {sessions} сесс. · всего {tokens} ток.',
+      wordsFragmentsTitle: 'Фрагменты, где встретилось «{term}» (нажмите для подстановки в правило)',
+      wordsActionTypeLabel: 'Действие правила',
+      'wordsActionOption.exclude': 'Исключить (удалить слово/оборот)',
+      'wordsActionOption.shorten': 'Сократить (заменить короткой формой)',
+      'wordsActionOption.rephrase': 'Перефразировать (переписать фрагмент)',
+      wordsReplacementLabel: 'Замена (для сокращения / перефразирования)',
+      wordsReplacementPlaceholder: 'Короткое слово или пусто для исключения',
+      wordsBeforeLabel: 'Фрагмент до (из сессии)',
+      wordsAfterLabel: 'Фрагмент после применения правила',
+      wordsDraftRuleLabel: 'Черновик строки правила для промпта',
+      wordsDraftDetectorLabel: 'Шаблон детектора (lib/detect.js)',
+      wordsMeasureBtn: 'Измерить в tiktoken',
+      wordsMeasuring: 'Измеряю…',
+      wordsMeasureResult: 'Фрагмент: {before} → {after} токенов (экономия {delta})',
+      wordsCorpusProjection: 'Прогноз на корпус ({occurrences}× в {sessions} сесс.): ~{totalSaved} токенов (~{perSession}/сессию)',
+      wordsPaybackStandalone: 'Как отдельная строка промпта ({ruleTokens} ток.): окупаемость {payback}×',
+      wordsPaybackExtend: 'В составе существующего правила ({ruleHint}): без роста цены промпта',
       diagTitle: 'Диагностика',
       tokenizerLabel: 'Токенизатор',
       tokenizerExact: 'tiktoken {version} · {encoding}',
@@ -243,6 +363,13 @@ window.__ModuleLoader__.load({
 .tg-entry-id{font-family:var(--dsw-font-mono,monospace);font-size:11px}
 .tg-muted{color:var(--dsw-alias-label-secondary)}
 .tg-note{margin:4px 0 0;padding-top:12px;border-top:.5px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-secondary);font-size:12px;line-height:18px}
+.tg-filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;align-items:end}
+.tg-mini-btn{height:24px;padding:0 8px;border:.5px solid var(--dsw-alias-border-l2);border-radius:5px;background:var(--dsw-alias-bg-layer-1);color:inherit;font-size:11px;cursor:pointer}
+.tg-mini-btn.active{border-color:var(--dsw-alias-brand-primary);font-weight:600}
+.tg-workbench{display:flex;flex-direction:column;gap:8px;margin-top:8px;padding:10px 12px;border:.5px solid var(--dsw-alias-border-l2);border-radius:8px;background:var(--dsw-alias-bg-layer-2,var(--dsw-alias-bg-layer-1))}
+.tg-frag{padding:6px 8px;border:.5px solid var(--dsw-alias-border-l1);border-radius:6px;background:var(--dsw-alias-bg-layer-1);cursor:pointer;font-size:12px;line-height:17px}
+.tg-frag.active{border-color:var(--dsw-alias-brand-primary)}
+.tg-mark{font-weight:600;text-decoration:underline}
 `
 
     /** Compact token count: 1659155 -> "1.7M". */
@@ -859,6 +986,680 @@ window.__ModuleLoader__.load({
       )
     }
 
+    /** Filter and sort `report.words.items` on the client. */
+    function filterWordsClient(wordsReport, filters) {
+      const items = Array.isArray(wordsReport?.items) ? wordsReport.items : []
+      const channel = filters.channel ?? 'all'
+      const scope = filters.scope ?? 'unmatched'
+      const ngramFilter =
+        filters.ngram === undefined || filters.ngram === 'all' ? 'all' : Number(filters.ngram)
+      const minChars = Number.isFinite(Number(filters.minChars)) ? Math.max(1, Number(filters.minChars)) : 4
+      const maxChars =
+        Number.isFinite(Number(filters.maxChars)) && Number(filters.maxChars) > 0 ? Number(filters.maxChars) : 0
+      const minTokens = Number.isFinite(Number(filters.minTokens)) ? Math.max(1, Number(filters.minTokens)) : 1
+      const hideStopwords = filters.hideStopwords !== false
+      const onlyCandidates = filters.onlyCandidates === true
+      const query = typeof filters.query === 'string' ? filters.query.trim().toLowerCase() : ''
+      const sort = filters.sort ?? 'totalTokens'
+      const limit = Number.isFinite(Number(filters.limit)) ? Math.max(1, Math.min(200, Number(filters.limit))) : 25
+
+      const projected = []
+      for (const item of items) {
+        if (ngramFilter !== 'all' && item.ngram !== ngramFilter) continue
+        if (item.chars < minChars) continue
+        if (maxChars > 0 && item.chars > maxChars) continue
+        if (item.bpeTokens < minTokens) continue
+        if (hideStopwords && item.stopword) continue
+        if (onlyCandidates && !item.suggestion) continue
+        if (query !== '' && !item.term.includes(query)) continue
+
+        let occ = 0
+        let sess = 0
+        if (channel === 'thinking' || channel === 'text') {
+          const ch = item.channels?.[channel]
+          occ = scope === 'raw' ? (ch?.raw ?? 0) : (ch?.unmatched ?? 0)
+          sess = ch?.sessions ?? item.sessions
+        } else {
+          occ = scope === 'raw' ? item.occurrences : item.unmatched
+          sess = scope === 'raw' ? item.sessions : item.unmatchedSessions
+        }
+        if (occ <= 0) continue
+
+        const totalTokens = occ * item.bpeTokens
+        const snippets =
+          channel === 'thinking' || channel === 'text'
+            ? (item.snippets ?? []).filter((s) => s.channel === channel)
+            : (item.snippets ?? [])
+
+        projected.push({
+          ...item,
+          activeOccurrences: occ,
+          activeSessions: sess,
+          activeTokens: totalTokens,
+          activeSnippets: snippets.length > 0 ? snippets : (item.snippets ?? []),
+        })
+      }
+
+      projected.sort((a, b) => {
+        if (sort === 'occurrences') return b.activeOccurrences - a.activeOccurrences || b.activeTokens - a.activeTokens
+        if (sort === 'chars') return b.chars - a.chars || b.activeTokens - a.activeTokens
+        if (sort === 'bpeTokens') return b.bpeTokens - a.bpeTokens || b.activeTokens - a.activeTokens
+        return b.activeTokens - a.activeTokens || b.activeOccurrences - a.activeOccurrences
+      })
+
+      return projected.slice(0, limit)
+    }
+
+    /** Rewrite a snippet by excluding or replacing `term`. */
+    function applyTermRewriteClient(snippet, term, action, replacement) {
+      if (typeof snippet !== 'string' || snippet.trim() === '' || typeof term !== 'string' || term.trim() === '') {
+        return String(snippet ?? '')
+      }
+      const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      if (action === 'exclude' || (replacement ?? '').trim() === '') {
+        const pattern = new RegExp(
+          `(?:^\\s*${escaped}\\s*[,:—–-]?\\s*|\\s*,\\s*${escaped}\\s*,|\\s*,?\\s*(?<![\\p{L}\\p{N}_])${escaped}(?![\\p{L}\\p{N}_])\\s*,?)`,
+          'giu',
+        )
+        const next = snippet
+          .replace(pattern, (match) => {
+            if (match.startsWith(',') && match.endsWith(',')) return ','
+            return ' '
+          })
+          .replace(/\s+([.,!?;:])/g, '$1')
+          .replace(/\s{2,}/g, ' ')
+          .trim()
+        if (next.length > 0 && /^\p{Ll}/u.test(next) && /^\p{Lu}/u.test(snippet.trim())) {
+          return next[0].toUpperCase() + next.slice(1)
+        }
+        return next
+      }
+      const target = replacement.trim()
+      const wordBoundary = new RegExp(`(?<![\\p{L}\\p{N}_])${escaped}(?![\\p{L}\\p{N}_])`, 'giu')
+      return snippet
+        .replace(wordBoundary, (matched) => {
+          if (/^\p{Lu}/u.test(matched) && /^\p{Ll}/u.test(target)) {
+            return target[0].toUpperCase() + target.slice(1)
+          }
+          return target
+        })
+        .replace(/\s{2,}/g, ' ')
+        .trim()
+    }
+
+    /** Highlight `term` inside a context sentence. */
+    function highlightTerm(text, term) {
+      if (!text || !term) return text
+      const lowerText = text.toLowerCase()
+      const lowerTerm = term.toLowerCase()
+      const idx = lowerText.indexOf(lowerTerm)
+      if (idx < 0) return text
+      return [
+        text.slice(0, idx),
+        h('span', { className: 'tg-mark', key: 'm' }, text.slice(idx, idx + term.length)),
+        text.slice(idx + term.length),
+      ]
+    }
+
+    /** Build a candidate prompt rule line and detector regex for the selected word/phrase. */
+    function buildRuleDraft(term, action, replacement) {
+      const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      if (action === 'shorten' && replacement.trim() !== '') {
+        return {
+          ruleLine: `Write "${replacement.trim()}" instead of "${term}".`,
+          detectorRegex: `/(?<![\\p{L}\\p{N}_])${escaped}(?![\\p{L}\\p{N}_])/giu → "${replacement.trim()}"`,
+        }
+      }
+      if (action === 'rephrase') {
+        const target = replacement.trim()
+        return {
+          ruleLine: target
+            ? `Replace "${term}" constructions with direct "${target}".`
+            : `Avoid nominalization or wrapper phrase "${term}"; state the action directly.`,
+          detectorRegex: `/(?<![\\p{L}\\p{N}_])${escaped}(?![\\p{L}\\p{N}_])/giu`,
+        }
+      }
+      return {
+        ruleLine: `No filler or discourse marker "${term}".`,
+        detectorRegex: `/(?<![\\p{L}\\p{N}_])${escaped}(?![\\p{L}\\p{N}_])[,]?\\s*/giu → ""`,
+      }
+    }
+
+    /** Word frequency & context rule workbench block. */
+    function WordsWorkbench(props) {
+      const { t, report } = props
+      const [channel, setChannel] = React.useState('all')
+      const [scope, setScope] = React.useState('unmatched')
+      const [ngram, setNgram] = React.useState('all')
+      const [minChars, setMinChars] = React.useState(4)
+      const [maxChars, setMaxChars] = React.useState(0)
+      const [minTokens, setMinTokens] = React.useState(1)
+      const [limit, setLimit] = React.useState(20)
+      const [sort, setSort] = React.useState('totalTokens')
+      const [query, setQuery] = React.useState('')
+      const [hideStopwords, setHideStopwords] = React.useState(true)
+      const [onlyCandidates, setOnlyCandidates] = React.useState(false)
+
+      const [selectedTerm, setSelectedTerm] = React.useState('')
+      const [snippetIdx, setSnippetIdx] = React.useState(0)
+      const [actionType, setActionType] = React.useState('exclude')
+      const [replacement, setReplacement] = React.useState('')
+      const [customBefore, setCustomBefore] = React.useState('')
+      const [customAfter, setCustomAfter] = React.useState('')
+      const [measured, setMeasured] = React.useState(null)
+      const [measuring, setMeasuring] = React.useState(false)
+
+      const items = filterWordsClient(report?.words, {
+        channel,
+        scope,
+        ngram,
+        minChars,
+        maxChars,
+        minTokens,
+        hideStopwords,
+        onlyCandidates,
+        query,
+        sort,
+        limit,
+      })
+
+      const activeItem =
+        items.find((item) => item.term === selectedTerm) ??
+        items.find((item) => item.suggestion) ??
+        items[0] ??
+        null
+
+      const selectWord = (item) => {
+        if (!item) return
+        const act = item.suggestion?.action ?? 'exclude'
+        const rep = item.suggestion?.replacement ?? ''
+        const firstSnippet = item.activeSnippets?.[0]?.text ?? ''
+        setSelectedTerm(item.term)
+        setSnippetIdx(0)
+        setActionType(act)
+        setReplacement(rep)
+        setCustomBefore(firstSnippet)
+        setCustomAfter(applyTermRewriteClient(firstSnippet, item.term, act, rep))
+        setMeasured(null)
+      }
+
+      const activeSnippets = activeItem?.activeSnippets ?? []
+      const currentSnippet = activeSnippets[snippetIdx] ?? activeSnippets[0] ?? null
+      const effectiveAction = selectedTerm === activeItem?.term ? actionType : (activeItem?.suggestion?.action ?? 'exclude')
+      const effectiveReplacement =
+        selectedTerm === activeItem?.term ? replacement : (activeItem?.suggestion?.replacement ?? '')
+      const beforeText =
+        selectedTerm === activeItem?.term && customBefore !== ''
+          ? customBefore
+          : (currentSnippet?.text ?? '')
+      const afterText =
+        selectedTerm === activeItem?.term && customAfter !== ''
+          ? customAfter
+          : applyTermRewriteClient(beforeText, activeItem?.term ?? '', effectiveAction, effectiveReplacement)
+
+      const draft = activeItem
+        ? buildRuleDraft(activeItem.term, effectiveAction, effectiveReplacement)
+        : { ruleLine: '', detectorRegex: '' }
+
+      const runMeasure = () => {
+        if (!beforeText) return
+        setMeasuring(true)
+        const qs = new URLSearchParams({
+          before: beforeText,
+          after: afterText,
+          ruleText: `- ${draft.ruleLine}`,
+        })
+        getJson(`${REPORT_PATH}?${qs.toString()}`)
+          .then((res) => {
+            if (res?.rewrite) setMeasured(res.rewrite)
+          })
+          .catch(() => {})
+          .finally(() => setMeasuring(false))
+      }
+
+      const scannedSessions = Math.max(1, Number(report?.scannedSessions) || 1)
+      const unitSaved =
+        measured !== null
+          ? Math.max(0, measured.delta)
+          : effectiveAction === 'exclude'
+            ? (activeItem?.bpeTokens ?? 1)
+            : Math.max(1, (activeItem?.bpeTokens ?? 1) - 1)
+      const totalSaved = (activeItem?.activeOccurrences ?? 0) * unitSaved
+      const perSessionSaved = totalSaved / scannedSessions
+      const ruleLineTokens = measured?.ruleTokens ?? 9
+      const standalonePayback = ruleLineTokens > 0 ? perSessionSaved / ruleLineTokens : 0
+
+      return h(
+        'div',
+        { className: 'tg-card' },
+        h('div', { className: 'tg-hint' }, t('wordsIntro')),
+        h(
+          'div',
+          { className: 'tg-filters' },
+          h(
+            Field,
+            { id: 'tg-words-channel', label: t('wordsChannelLabel') },
+            h(
+              'select',
+              {
+                id: 'tg-words-channel',
+                className: 'tg-select',
+                value: channel,
+                onChange: (e) => setChannel(e.target.value),
+              },
+              h('option', { value: 'all' }, t('wordsChannel.all')),
+              h('option', { value: 'thinking' }, t('wordsChannel.thinking')),
+              h('option', { value: 'text' }, t('wordsChannel.text')),
+            ),
+          ),
+          h(
+            Field,
+            { id: 'tg-words-scope', label: t('wordsScopeLabel') },
+            h(
+              'select',
+              {
+                id: 'tg-words-scope',
+                className: 'tg-select',
+                value: scope,
+                onChange: (e) => setScope(e.target.value),
+              },
+              h('option', { value: 'unmatched' }, t('wordsScope.unmatched')),
+              h('option', { value: 'raw' }, t('wordsScope.raw')),
+            ),
+          ),
+          h(
+            Field,
+            { id: 'tg-words-ngram', label: t('wordsNgramLabel') },
+            h(
+              'select',
+              {
+                id: 'tg-words-ngram',
+                className: 'tg-select',
+                value: ngram,
+                onChange: (e) => setNgram(e.target.value),
+              },
+              h('option', { value: 'all' }, t('wordsNgram.all')),
+              h('option', { value: '1' }, t('wordsNgram.1')),
+              h('option', { value: '2' }, t('wordsNgram.2')),
+              h('option', { value: '3' }, t('wordsNgram.3')),
+            ),
+          ),
+          h(
+            Field,
+            { id: 'tg-words-sort', label: t('wordsSortLabel') },
+            h(
+              'select',
+              {
+                id: 'tg-words-sort',
+                className: 'tg-select',
+                value: sort,
+                onChange: (e) => setSort(e.target.value),
+              },
+              h('option', { value: 'totalTokens' }, t('wordsSort.totalTokens')),
+              h('option', { value: 'occurrences' }, t('wordsSort.occurrences')),
+              h('option', { value: 'chars' }, t('wordsSort.chars')),
+              h('option', { value: 'bpeTokens' }, t('wordsSort.bpeTokens')),
+            ),
+          ),
+          h(
+            Field,
+            { id: 'tg-words-min-chars', label: t('wordsMinCharsLabel') },
+            h('input', {
+              id: 'tg-words-min-chars',
+              className: 'tg-input',
+              type: 'number',
+              min: 1,
+              max: 40,
+              value: minChars,
+              onChange: (e) => setMinChars(Number(e.target.value) || 1),
+            }),
+          ),
+          h(
+            Field,
+            { id: 'tg-words-max-chars', label: t('wordsMaxCharsLabel') },
+            h('input', {
+              id: 'tg-words-max-chars',
+              className: 'tg-input',
+              type: 'number',
+              min: 0,
+              max: 60,
+              value: maxChars,
+              onChange: (e) => setMaxChars(Math.max(0, Number(e.target.value) || 0)),
+            }),
+          ),
+          h(
+            Field,
+            { id: 'tg-words-min-tokens', label: t('wordsMinTokensLabel') },
+            h('input', {
+              id: 'tg-words-min-tokens',
+              className: 'tg-input',
+              type: 'number',
+              min: 1,
+              max: 10,
+              value: minTokens,
+              onChange: (e) => setMinTokens(Math.max(1, Number(e.target.value) || 1)),
+            }),
+          ),
+          h(
+            Field,
+            { id: 'tg-words-limit', label: t('wordsLimitLabel') },
+            h(
+              'select',
+              {
+                id: 'tg-words-limit',
+                className: 'tg-select',
+                value: String(limit),
+                onChange: (e) => setLimit(Number(e.target.value) || 20),
+              },
+              h('option', { value: '10' }, '10'),
+              h('option', { value: '20' }, '20'),
+              h('option', { value: '50' }, '50'),
+              h('option', { value: '100' }, '100'),
+            ),
+          ),
+        ),
+        h(
+          Field,
+          { id: 'tg-words-search', label: t('wordsSearchLabel') },
+          h('input', {
+            id: 'tg-words-search',
+            className: 'tg-input',
+            type: 'text',
+            placeholder: t('wordsSearchPlaceholder'),
+            value: query,
+            onChange: (e) => setQuery(e.target.value),
+          }),
+        ),
+        h(
+          'div',
+          { className: 'tg-actions' },
+          h(
+            'label',
+            { className: 'tg-check' },
+            h('input', {
+              type: 'checkbox',
+              checked: hideStopwords,
+              onChange: (e) => setHideStopwords(e.target.checked),
+            }),
+            t('wordsHideStopwords'),
+          ),
+          h(
+            'label',
+            { className: 'tg-check' },
+            h('input', {
+              type: 'checkbox',
+              checked: onlyCandidates,
+              onChange: (e) => setOnlyCandidates(e.target.checked),
+            }),
+            t('wordsOnlyCandidates'),
+          ),
+        ),
+        items.length === 0
+          ? h('div', { className: 'tg-hint' }, t('wordsEmpty'))
+          : h(
+              'table',
+              { className: 'tg-table' },
+              h(
+                'thead',
+                null,
+                h(
+                  'tr',
+                  null,
+                  h('th', null, t('wordsHeaderTerm')),
+                  h('th', { className: 'tg-num' }, t('wordsHeaderChars')),
+                  h('th', { className: 'tg-num' }, t('wordsHeaderBpe')),
+                  h('th', { className: 'tg-num' }, t('wordsHeaderOcc')),
+                  h('th', { className: 'tg-num' }, t('wordsHeaderSess')),
+                  h('th', { className: 'tg-num' }, t('wordsHeaderMass')),
+                  h('th', null, t('wordsHeaderAction')),
+                  h('th', null, t('wordsHeaderContext')),
+                ),
+              ),
+              h(
+                'tbody',
+                null,
+                ...items.map((item) => {
+                  const isSelected = activeItem?.term === item.term
+                  const act = item.suggestion?.action
+                  const tone = act === 'exclude' ? 'bad' : act === 'shorten' ? 'warn' : 'ok'
+                  return h(
+                    'tr',
+                    { key: item.term },
+                    h('td', { className: 'tg-mono' }, item.term),
+                    h('td', { className: 'tg-num' }, String(item.chars)),
+                    h('td', { className: 'tg-num' }, String(item.bpeTokens)),
+                    h('td', { className: 'tg-num' }, String(item.activeOccurrences)),
+                    h('td', { className: 'tg-num' }, String(item.activeSessions)),
+                    h('td', { className: 'tg-num' }, fmtTokens(item.activeTokens)),
+                    h(
+                      'td',
+                      null,
+                      act ? h('span', { className: `tg-chip ${tone}` }, t(`wordsAction.${act}`)) : '—',
+                    ),
+                    h(
+                      'td',
+                      null,
+                      h(
+                        'button',
+                        {
+                          type: 'button',
+                          className: `tg-mini-btn${isSelected ? ' active' : ''}`,
+                          onClick: () => selectWord(item),
+                        },
+                        fill(t('wordsInspectBtn'), { count: (item.activeSnippets ?? []).length }),
+                      ),
+                    ),
+                  )
+                }),
+              ),
+            ),
+        activeItem
+          ? h(
+              'div',
+              { className: 'tg-workbench' },
+              h(
+                'div',
+                { className: 'tg-label' },
+                fill(t('wordsWorkbenchTitle'), { term: activeItem.term }),
+              ),
+              h(
+                'div',
+                { className: 'tg-muted tg-mono' },
+                fill(t('wordsWorkbenchMeta'), {
+                  chars: activeItem.chars,
+                  bpe: activeItem.bpeTokens,
+                  occurrences: activeItem.activeOccurrences,
+                  sessions: activeItem.activeSessions,
+                  tokens: fmtTokens(activeItem.activeTokens),
+                }),
+              ),
+              activeItem.suggestion?.reason
+                ? h('div', { className: 'tg-hint' }, activeItem.suggestion.reason)
+                : null,
+              activeSnippets.length > 0
+                ? h(
+                    'div',
+                    { className: 'tg-row' },
+                    h(
+                      'div',
+                      { className: 'tg-hint' },
+                      fill(t('wordsFragmentsTitle'), { term: activeItem.term }),
+                    ),
+                    ...activeSnippets.map((frag, idx) =>
+                      h(
+                        'div',
+                        {
+                          key: `${frag.session}-${idx}`,
+                          className: `tg-frag${idx === snippetIdx ? ' active' : ''}`,
+                          onClick: () => {
+                            setSelectedTerm(activeItem.term)
+                            setSnippetIdx(idx)
+                            setCustomBefore(frag.text)
+                            setCustomAfter(
+                              applyTermRewriteClient(
+                                frag.text,
+                                activeItem.term,
+                                effectiveAction,
+                                effectiveReplacement,
+                              ),
+                            )
+                            setMeasured(null)
+                          },
+                        },
+                        h(
+                          'div',
+                          { className: 'tg-muted tg-mono' },
+                          `${frag.session} · ${frag.channel} · ${frag.tokens} tok`,
+                        ),
+                        h('div', null, highlightTerm(frag.text, activeItem.term)),
+                      ),
+                    ),
+                  )
+                : null,
+              h(
+                'div',
+                { className: 'tg-filters' },
+                h(
+                  Field,
+                  { id: 'tg-wb-action', label: t('wordsActionTypeLabel') },
+                  h(
+                    'select',
+                    {
+                      id: 'tg-wb-action',
+                      className: 'tg-select',
+                      value: effectiveAction,
+                      onChange: (e) => {
+                        const nextAct = e.target.value
+                        setSelectedTerm(activeItem.term)
+                        setActionType(nextAct)
+                        setCustomBefore(beforeText)
+                        setCustomAfter(
+                          applyTermRewriteClient(beforeText, activeItem.term, nextAct, effectiveReplacement),
+                        )
+                        setMeasured(null)
+                      },
+                    },
+                    h('option', { value: 'exclude' }, t('wordsActionOption.exclude')),
+                    h('option', { value: 'shorten' }, t('wordsActionOption.shorten')),
+                    h('option', { value: 'rephrase' }, t('wordsActionOption.rephrase')),
+                  ),
+                ),
+                h(
+                  Field,
+                  { id: 'tg-wb-replace', label: t('wordsReplacementLabel') },
+                  h('input', {
+                    id: 'tg-wb-replace',
+                    className: 'tg-input',
+                    type: 'text',
+                    placeholder: t('wordsReplacementPlaceholder'),
+                    value: effectiveReplacement,
+                    onChange: (e) => {
+                      const nextRep = e.target.value
+                      setSelectedTerm(activeItem.term)
+                      setReplacement(nextRep)
+                      const nextAct = nextRep.trim() !== '' && effectiveAction === 'exclude' ? 'shorten' : effectiveAction
+                      setActionType(nextAct)
+                      setCustomBefore(beforeText)
+                      setCustomAfter(applyTermRewriteClient(beforeText, activeItem.term, nextAct, nextRep))
+                      setMeasured(null)
+                    },
+                  }),
+                ),
+              ),
+              h(
+                Field,
+                { id: 'tg-wb-before', label: t('wordsBeforeLabel') },
+                h('input', {
+                  id: 'tg-wb-before',
+                  className: 'tg-input tg-mono',
+                  type: 'text',
+                  value: beforeText,
+                  onChange: (e) => {
+                    setSelectedTerm(activeItem.term)
+                    setCustomBefore(e.target.value)
+                    setMeasured(null)
+                  },
+                }),
+              ),
+              h(
+                Field,
+                { id: 'tg-wb-after', label: t('wordsAfterLabel') },
+                h('input', {
+                  id: 'tg-wb-after',
+                  className: 'tg-input tg-mono',
+                  type: 'text',
+                  value: afterText,
+                  onChange: (e) => {
+                    setSelectedTerm(activeItem.term)
+                    setCustomAfter(e.target.value)
+                    setMeasured(null)
+                  },
+                }),
+              ),
+              h(
+                'div',
+                { className: 'tg-actions' },
+                h(
+                  'button',
+                  {
+                    type: 'button',
+                    className: 'tg-button',
+                    disabled: measuring || !beforeText,
+                    onClick: runMeasure,
+                  },
+                  measuring ? t('wordsMeasuring') : t('wordsMeasureBtn'),
+                ),
+                measured
+                  ? h(
+                      'span',
+                      { className: 'tg-mono' },
+                      fill(t('wordsMeasureResult'), {
+                        before: measured.beforeTokens,
+                        after: measured.afterTokens,
+                        delta: measured.delta,
+                      }),
+                    )
+                  : null,
+              ),
+              h(
+                'div',
+                { className: 'tg-muted tg-mono' },
+                fill(t('wordsCorpusProjection'), {
+                  occurrences: activeItem.activeOccurrences,
+                  sessions: activeItem.activeSessions,
+                  totalSaved: fmtTokens(totalSaved),
+                  perSession: fmtTokens(perSessionSaved),
+                }),
+              ),
+              h(
+                'div',
+                { className: 'tg-entry-head' },
+                h(
+                  'span',
+                  { className: `tg-chip ${standalonePayback >= 1 ? 'ok' : 'warn'}` },
+                  fill(t('wordsPaybackStandalone'), {
+                    ruleTokens: ruleLineTokens,
+                    payback: standalonePayback.toFixed(1),
+                  }),
+                ),
+                activeItem.suggestion?.ruleHint
+                  ? h(
+                      'span',
+                      { className: 'tg-chip ok' },
+                      fill(t('wordsPaybackExtend'), { ruleHint: activeItem.suggestion.ruleHint }),
+                    )
+                  : null,
+              ),
+              h(
+                Field,
+                { id: 'tg-wb-rule-draft', label: t('wordsDraftRuleLabel') },
+                h('pre', { className: 'tg-pre' }, `- ${draft.ruleLine}\n// ${t('wordsDraftDetectorLabel')}: ${draft.detectorRegex}`),
+              ),
+            )
+          : null,
+      )
+    }
+
     /** Diagnostics block. */
     function Diagnostics(props) {
       const { t, status } = props
@@ -952,6 +1753,8 @@ window.__ModuleLoader__.load({
           onApplied: refresh,
           onRescan: rescan,
         }),
+        h('h3', { className: 'tg-sub' }, t('wordsTitle')),
+        h(WordsWorkbench, { t, report: view?.report }),
         h('h3', { className: 'tg-sub' }, t('ledgerTitle')),
         h(Ledger, { t, ledger: view?.ledger }),
         h('h3', { className: 'tg-sub' }, t('diagTitle')),

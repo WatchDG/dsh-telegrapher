@@ -4,6 +4,45 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] — 2026-10-24
+
+### Added
+
+- **Word and phrase analysis (`lib/words.js`)** — ranks words and 1–3-word
+  phrases by length, occurrences and BPE token mass over visible reply text and
+  reasoning prose, with code fences, inline code, URLs and paths stripped first.
+  Each term keeps up to five session fragments, a stopword flag and a hint
+  (`exclude`, `shorten`, `rephrase`) from the filler dictionary; the module also
+  rewrites a fragment for a candidate rule.
+- **Words workbench in Settings → Telegrapher** — filters by channel, text slice
+  (after the active rules or raw), unit length, character and BPE length; sorts
+  by token mass or length, searches terms, hides stopwords, shows only flagged
+  candidates. Picking a term opens its fragments, a draft rule line and a
+  detector pattern, and prices the candidate rewrite with tiktoken against the
+  term's corpus mass and payback.
+- **`words` action for the agent tool** and matching `--words`, `--min-chars`,
+  `--max-chars`, `--min-tokens`, `--channel`, `--candidates` and `--query` flags
+  for `scripts/analyze-sessions.mjs`.
+- **Rewrite pricing route** — `GET /telegrapher/report?before=…&after=…` returns
+  exact tiktoken counts and the delta for a candidate rewrite, optionally with
+  the tokens of the rule line (`ruleText`).
+- **`run_code` coverage** — `tools-no-banner-comments` and `tools-description`
+  price `run_code` arguments (`code`, `program`), and sink attribution treats
+  `run_code` as a covered tool.
+
+### Changed
+
+- **`core-narration` reads step narration** — on a unit that calls tools, the
+  detector drops a whole short status line that names the next step ("Now update
+  the route", "Проверяю тесты") and a trailing narration clause after a dash or
+  a sentence break, keeping the leading fact.
+- **`thinking-no-narration` and `thinking-no-meta`** — the lead-in patterns
+  accept more verbs (clean, generate, review, restore, draft, write, edit,
+  update) and more separators; discourse markers "actually", "basically" and
+  "essentially" are stripped, as are "carefully" and "thoroughly" qualifiers.
+- **`core-filler`** — "it is worth noting that", "worth noting that",
+  "соответственно", "непосредственно" and "фактически".
+
 ## [1.2.0] — 2026-10-23
 
 ### Added

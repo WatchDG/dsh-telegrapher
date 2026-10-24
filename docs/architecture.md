@@ -31,6 +31,7 @@ settings page; and a local Python process that runs `tiktoken`.
 | `lib/rules.js` | Compiles the section for the current mode and places it after the shell tools' guidance. |
 | `lib/digest.js` | One pass over a session log: usage, units with context, calls, treatment flag. |
 | `lib/detect.js` | Pure detectors; a rewrite or nothing. Never edits a fence. |
+| `lib/words.js` | Word and phrase frequency over prose: cleaning, n-grams, BPE mass, context fragments, rule hints, fragment rewrite. |
 | `lib/analysis.js` | Scan, detect, price in one batch, aggregate, attribute, compare. Holds the report cache. |
 | `lib/hypotheses.js` | Ledger entries, verdict thresholds, payback, bootstrap intervals, empirical comparison helper. |
 | `lib/tiktoken.js` | Tokenizer bridge and estimator fallback. |

@@ -136,7 +136,7 @@ test('the first frame renders every block without data', () => {
   const tree = mounted.component({ t: (key) => key, setField: async () => {} })
   const text = textOf(tree)
   assert.ok(text.some((entry) => entry.includes('tg-section')))
-  for (const key of ['title', 'rulesTitle', 'reportTitle', 'ledgerTitle', 'diagTitle', 'note']) {
+  for (const key of ['title', 'rulesTitle', 'reportTitle', 'wordsTitle', 'ledgerTitle', 'diagTitle', 'note']) {
     assert.ok(text.includes(key), `missing ${key}`)
   }
   assert.ok(text.includes('rescan'), 'the report offers a rescan')
@@ -155,4 +155,10 @@ test('the page survives a failed status fetch', () => {
   const tree = mounted.component({ t: (key) => key, setField: async () => {} })
   // The section is rendered with status === null; a failed fetch is the same frame.
   assert.ok(textOf(tree).length > 5)
+})
+
+test('English and Russian dictionaries define identical keys', () => {
+  const mounted = mountClient()
+  const { en, ru } = mounted.dictionaries.dictionaries
+  assert.deepEqual(Object.keys(en).sort(), Object.keys(ru).sort())
 })

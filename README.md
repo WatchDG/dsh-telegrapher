@@ -293,6 +293,7 @@ answer is a bounded text table:
 | `audit` | payback recommendations: which rules pay back (`>= 1×`) and which lean rules are below `1×` |
 | `sessions` | the newest scanned sessions with model, steps, output and thinking |
 | `session` | detailed breakdown of a single session (`session` id or prefix, defaults to newest) |
+| `words` | top words and phrases: characters, BPE price, occurrences, sessions, token mass, rule hint and context fragments |
 | `measure` | tiktoken counts for given `texts` and `[before, after]` `pairs` |
 
 `measure` is how an agent tests a candidate rewrite before proposing a rule:
@@ -348,6 +349,7 @@ lib/rules.js          section compilation and placement
 lib/config.js         Config schema, defaults, normalization, volatile snapshot
 lib/digest.js         session log → accounting, units with context, tool calls
 lib/detect.js         pure detectors: rewrite or nothing, fences untouched
+lib/words.js          word and phrase frequency, BPE mass, context fragments, rule hints
 lib/tiktoken.js       tiktoken bridge (newline-delimited JSON) + estimator fallback
 lib/analysis.js       scan → detect → price → aggregate → compare
 lib/hypotheses.js     ledger entries, verdicts, bootstrap intervals

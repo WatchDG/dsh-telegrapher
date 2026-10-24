@@ -26,20 +26,46 @@ import { RULES, RENDERED } from '../lib/catalogue.js'
 import { buildLedger } from '../lib/hypotheses.js'
 import { rulesText } from '../lib/rules.js'
 import { createTokenCounter } from '../lib/tiktoken.js'
-import { fmtShare, formatAudit, formatHypotheses, formatRules, formatSummary } from '../lib/tool.js'
+import {
+  fmtShare,
+  formatAudit,
+  formatHypotheses,
+  formatRules,
+  formatSummary,
+  formatWords,
+} from '../lib/tool.js'
 
 /** zstd frame magic number. A session log is a concatenation of frames. */
 const MAGIC = Buffer.from([0x28, 0xb5, 0x2f, 0xfd])
 
 /** Parse `--name value` flags. */
 function parseArgs(argv) {
-  const options = { sessions: 20, root: '', encoding: 'o200k_base', json: false }
+  const options = {
+    sessions: 20,
+    root: '',
+    encoding: 'o200k_base',
+    json: false,
+    words: 20,
+    minChars: 4,
+    maxChars: 0,
+    minTokens: 1,
+    channel: 'all',
+    onlyCandidates: false,
+    query: '',
+  }
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index]
     if (flag === '--json') options.json = true
     else if (flag === '--sessions') options.sessions = Number(argv[++index])
     else if (flag === '--root') options.root = String(argv[++index] ?? '')
     else if (flag === '--encoding') options.encoding = String(argv[++index] ?? '')
+    else if (flag === '--words') options.words = Number(argv[++index]) || 20
+    else if (flag === '--min-chars') options.minChars = Number(argv[++index]) || 4
+    else if (flag === '--max-chars') options.maxChars = Number(argv[++index]) || 0
+    else if (flag === '--min-tokens') options.minTokens = Number(argv[++index]) || 1
+    else if (flag === '--channel') options.channel = String(argv[++index] ?? 'all')
+    else if (flag === '--candidates') options.onlyCandidates = true
+    else if (flag === '--query') options.query = String(argv[++index] ?? '')
     else if (flag === '--help' || flag === '-h') options.help = true
   }
   return options
@@ -203,6 +229,15 @@ async function main() {
     `${formatSummary(report, ledger, priced.counts[0])}\n\n` +
       `${formatAudit(report, ledger, settings)}\n\n` +
       `Rules:\n${formatRules(ledger)}\n\n` +
+      `Words:\n${formatWords(report, {
+        limit: options.words,
+        minChars: options.minChars,
+        maxChars: options.maxChars,
+        minTokens: options.minTokens,
+        channel: options.channel,
+        onlyCandidates: options.onlyCandidates,
+        query: options.query,
+      })}\n\n` +
       `Hypotheses:\n${formatHypotheses(ledger, 40)}\n\n` +
       `Tools: ${report.tools
         .slice(0, 8)

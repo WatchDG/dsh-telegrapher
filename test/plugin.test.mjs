@@ -132,7 +132,19 @@ test('the report route serves the report and the ledger', async () => {
   assert.ok(payload.ledger.length > 0)
   assert.ok(payload.ledger.every((entry) => typeof entry.status === 'string'))
   assert.ok(payload.report.rules['core-filler'].tokens > 0)
+  assert.ok(Array.isArray(payload.report.words?.items))
+  assert.ok(payload.report.words.items.length > 0)
   assert.ok(payload.section.tokens > 0)
+
+  const rewriteRes = await callRoute(route, {
+    url: `${REPORT_PATH}?before=${encodeURIComponent('one two three')}&after=${encodeURIComponent('one two')}&ruleText=${encodeURIComponent('- No three.')}`,
+  })
+  const rewritePayload = rewriteRes.json()
+  assert.equal(rewritePayload.ok, true)
+  assert.equal(rewritePayload.rewrite.beforeTokens, 3)
+  assert.equal(rewritePayload.rewrite.afterTokens, 2)
+  assert.equal(rewritePayload.rewrite.delta, 1)
+  assert.equal(rewritePayload.rewrite.ruleTokens, 3)
 })
 
 test('the scan route drops the cache and rescans', async () => {
@@ -189,6 +201,8 @@ test('the tool summarises the corpus and lists rules', async () => {
   assert.match(audit.text, /Audit \(3 sessions/)
   const sessionDetail = await tool.execute({ action: 'session', session: 's3' })
   assert.match(sessionDetail.text, /Session s3/)
+  const wordsView = await tool.execute({ action: 'words', limit: 5 })
+  assert.match(wordsView.text, /word\/phrase\s+chars\s+bpe/)
   const sessionsView = await tool.execute({ action: 'sessions', limit: 2 })
   assert.match(sessionsView.text, /session\s+created/)
   assert.equal(sessionsView.text.split('\n').length, 3)
