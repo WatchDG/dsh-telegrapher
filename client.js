@@ -351,7 +351,7 @@ window.__ModuleLoader__.load({
 .tg-chip{display:inline-block;padding:0 7px;border-radius:9px;border:.5px solid currentColor;font-size:11px;line-height:17px}
 .tg-chip.ok{color:var(--dsw-alias-state-success-primary)}
 .tg-chip.bad{color:var(--dsw-alias-state-error-primary)}
-.tg-chip.warn{color:var(--dsw-alias-state-warning-primary)}
+.tg-chip.warn{color:var(--dsw-alias-state-warn-primary,var(--dsw-alias-state-idle-primary))}
 .tg-chip.mute{color:var(--dsw-alias-label-secondary)}
 .tg-bar{display:grid;grid-template-columns:140px 1fr 46px;gap:8px;align-items:center;font-size:12px}
 .tg-bar-track{height:8px;border-radius:4px;background:var(--dsw-alias-bg-layer-2,var(--dsw-alias-bg-layer-1));overflow:hidden}
@@ -1763,6 +1763,72 @@ window.__ModuleLoader__.load({
       )
     }
 
+    /** Section id: also the key of the navigation icon registered beside it. */
+    const SECTION_ID = 'telegrapher'
+
+    /**
+     * Navigation glyph for the Settings row. DSH 0.2.2 renders the
+     * `settings.section.icon` list, dispatched by the matching section id;
+     * 0.2.1 has no such slot, so the registration below is optional there.
+     * A telegraph key: three dots and a dash over a downward chevron.
+     * @param {{ size?: number }} props - owner-provided glyph size.
+     */
+    function NavIcon(props) {
+      const size = Number.isFinite(props?.size) ? props.size : 16
+      return h(
+        'svg',
+        {
+          width: size,
+          height: size,
+          viewBox: '0 0 64 64',
+          role: 'img',
+          'aria-hidden': 'true',
+          focusable: 'false',
+        },
+        h('g', { fill: 'currentColor' },
+          h('circle', { cx: 15, cy: 24, r: 3.4 }),
+          h('circle', { cx: 25.5, cy: 24, r: 3.4 }),
+          h('circle', { cx: 36, cy: 24, r: 3.4 }),
+          h('rect', { x: 44.5, y: 20.6, width: 13, height: 6.8, rx: 3.4 }),
+        ),
+        h('path', {
+          d: 'M22 38.5 L32 48.5 L42 38.5',
+          fill: 'none',
+          stroke: 'currentColor',
+          strokeWidth: 4,
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+        }),
+        h('path', {
+          d: 'M32 33.5 L32 42.5',
+          stroke: 'currentColor',
+          strokeWidth: 4,
+          strokeLinecap: 'round',
+        }),
+      )
+    }
+
+    /**
+     * Register the navigation icon when this DSH version declares the slot.
+     *
+     * The icon slot is new in 0.2.2: the shell falls back to a default glyph
+     * when nothing is registered, so a missing slot is not an error. A slot
+     * lookup that throws (an older Client that does not know the name) must
+     * not take the settings page down with it.
+     */
+    function registerNavIcon(ctx, t) {
+      try {
+        ctx.slots.inject('settings.section.icon', () =>
+          ctx.slots.register(
+            { name: 'settings.section.icon', id: SECTION_ID, order: 19.5 },
+            NavIcon,
+          ),
+        )
+      } catch (error) {
+        ctx.logger?.warn?.(`dsh-telegrapher: navigation icon unavailable: ${String(error?.message ?? error)}`)
+      }
+    }
+
     /** Required services. `configForms` is provided by the Settings plugin. */
     const inject = ['slots', 'locale', 'configForms']
 
@@ -1774,6 +1840,7 @@ window.__ModuleLoader__.load({
     function apply(ctx) {
       ctx.effect(() => ctx.locale.register(NS, { en, ru }), 'telegrapher: dictionaries')
       const t = ctx.locale.bind(NS)
+      registerNavIcon(ctx, t)
 
       ctx.effect(
         () =>
@@ -1785,7 +1852,7 @@ window.__ModuleLoader__.load({
               ctx.slots.register(
                 {
                   name: 'settings.section',
-                  id: 'telegrapher',
+                  id: SECTION_ID,
                   order: 19.5,
                   label: () => t('nav'),
                   locale: NS,

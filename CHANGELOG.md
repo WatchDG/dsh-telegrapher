@@ -4,6 +4,62 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] — 2026-11-10
+
+Adapted to DeepSeek Harness **0.2.2-rc.1** (the plugin was prepared against
+0.2.1-rc.5). Every Host and Client seam the plugin uses was re-checked against
+the installed runtime; no behavioral break required a rewrite, so this release
+is a compatibility and packaging update.
+
+### Added
+
+- **Settings navigation icon** — the browser half registers the new
+  `settings.section.icon` slot with the plugin's telegraph-key glyph. DSH 0.2.2
+  dispatches the slot by the matching section id and falls back to the default
+  gear when nothing is registered, so the registration is skipped harmlessly on
+  0.2.1, where the slot does not exist.
+
+### Changed
+
+- **`engines.dsh` declared** — `">=0.2.1-rc.5 <0.3.0"`. 0.2.2 enforces plugin
+  DSH requirements at install and activation time, and an own `engines.dsh`
+  decides alone (`peerDependencies` are then ignored). The range admits the
+  0.2.1 and 0.2.2 prereleases the plugin was verified on and excludes 0.3.
+  `engines.node` stays `>=20`: the plugin's own code runs there, and the Node
+  24.9 floor 0.2.2 raises belongs to the Harness runtime.
+- **`@deepseek-ai/schemastery` range widened to `^3.18.5`** — 0.2.2 ships
+  3.19.0, the profile still hoists 3.18.5, and `src/index.ts` is byte-identical
+  between the two; the tilde range would have forced a duplicate copy for no
+  reason. Both versions satisfy `^3.18.5`.
+
+### Fixed
+
+- **Warning chip used a token DSH never declared** — the Settings stylesheet
+  read `--dsw-alias-state-warning-primary`, while the theme registry (0.2.1 and
+  0.2.2 alike) declares `--dsw-alias-state-warn-primary`. The chip fell back to
+  the inherited colour. It now uses the declared token with an idle-state
+  fallback.
+
+### Verified
+
+- Host seams re-checked against 0.2.2-rc.1: `systemPrompt.section` /
+  `getSectionOrder` (the section still lands right after the shell tools, now
+  ahead of the new `TOOL_APPLY_PATCH` at 1350), `tools.register` (the
+  single-argument form still accepted; the per-step `ResolvedToolSet` only
+  affects plugins that declare `when`), `webServer.register({kind:'exact'})`,
+  `connection.requestRejection` (still 401 for an unauthenticated request),
+  `sessionQuery.listSessions`/`readSession`, `sessionPersistence.list()`
+  (`sizeBytes` unchanged; `location` is additive), and `ctx.effect`/`ctx.inject`/
+  `ctx.get` under Cordis 4.1.0.
+- Volatile config live-update still works: Cordis 4.1.0's `Fiber.resolveConfig`
+  and Loader 1.1.0's `_commitVolatile` still commit values into the running
+  fiber's references and emit `loader/volatile-update`, so a Settings write
+  reaches the plugin without a remount.
+- Client seams re-checked: `slots.inject`/`slots.register` options, the
+  `configForms.whileServed`/`get`/`set` contract, `locale.register`/`bind`, and
+  the `dsh.client.platform`/`inject` manifest fields are unchanged. The session
+  log format is still v4, so the analysis pipeline reads the same records.
+
 ## [1.3.0] — 2026-10-24
 
 ### Added

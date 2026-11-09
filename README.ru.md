@@ -97,8 +97,8 @@
 
 | Требование | Подробности |
 |---|---|
-| [DeepSeek Harness](https://www.deepseek.com/en/harness/) | 0.2.x (проверено на 0.2.1-rc.2). Плагин использует `systemPrompt`, `sessionQuery` (анализ), `sessionPersistence` (ограничение размера), `webServer` и `tools`. |
-| Node.js | 20 или новее для самого плагина. |
+| [DeepSeek Harness](https://www.deepseek.com/en/harness/) | 0.2.x (проверено на 0.2.1-rc.5 и 0.2.2-rc.1; `engines.dsh` — `>=0.2.1-rc.5 <0.3.0`). Плагин использует `systemPrompt`, `sessionQuery` (анализ), `sessionPersistence` (ограничение размера), `webServer` и `tools`. |
+| Node.js | 20 или новее для самого плагина. DSH 0.2.2 поднимает минимум Harness до Node 24.9. |
 | Python 3 + [tiktoken](https://github.com/openai/tiktoken) | Необязательно. Без него правила работают, а все числа помечаются как оценка. |
 
 ### Установка tiktoken

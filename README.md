@@ -95,8 +95,8 @@ claim. Blank-line removal is such a control: measured at zero savings.
 
 | Requirement | Details |
 |---|---|
-| [DeepSeek Harness](https://www.deepseek.com/en/harness/) | 0.2.x (tested with 0.2.1-rc.2). The plugin uses `systemPrompt`, `sessionQuery` (analysis), `sessionPersistence` (size guard), `webServer` and `tools`. |
-| Node.js | 20 or newer for the plugin itself. |
+| [DeepSeek Harness](https://www.deepseek.com/en/harness/) | 0.2.x (verified on 0.2.1-rc.5 and 0.2.2-rc.1; `engines.dsh` is `>=0.2.1-rc.5 <0.3.0`). The plugin uses `systemPrompt`, `sessionQuery` (analysis), `sessionPersistence` (size guard), `webServer` and `tools`. |
+| Node.js | 20 or newer for the plugin itself. DSH 0.2.2 raises the Harness minimum to Node 24.9. |
 | Python 3 + [tiktoken](https://github.com/openai/tiktoken) | Optional. Without it the plugin still applies the rules and marks every number as an estimate. |
 
 ### Install tiktoken

@@ -114,6 +114,9 @@ the Host cannot leave an orphan behind.
 `client.js` is a `window.__ModuleLoader__` factory module. It:
 
 - registers `en`/`ru` dictionaries under `settings.telegrapher`;
+- registers the optional `settings.section.icon` glyph for the section id
+  (DSH 0.2.2 added the slot; a Client without it falls back to the default gear
+  and a failed slot lookup is logged, never fatal);
 - waits until the Host serves the `telegrapher` config namespace
   (`configForms.whileServed`), then registers one `settings.section` with
   `id: 'telegrapher'`, order `19.5`;
@@ -134,6 +137,26 @@ the Host cannot leave an orphan behind.
 | A session above 24 MB | Skipped before reading, with a reason. |
 | Configuration read-only | The page states it and renders no controls. |
 | `analysis: false` | The report explains that analysis is disabled; the tool says the same. |
+
+## DSH compatibility
+
+`package.json` declares `engines.dsh: ">=0.2.1-rc.5 <0.3.0"`. DSH 0.2.2
+enforces plugin DSH requirements at install and activation, and an own
+`engines.dsh` decides alone (peer dependencies are then ignored). The plugin was
+re-verified seam by seam on 0.2.2-rc.1:
+
+| Seam | Status on 0.2.2-rc.1 |
+|---|---|
+| `systemPrompt.section` / `getSectionOrder` | unchanged; the section still lands right after the shell tools, ahead of the new `TOOL_APPLY_PATCH` (1350) |
+| `tools.register(definition)` | single-argument form still accepted; the per-step `ResolvedToolSet` only affects tools that declare `when` |
+| `webServer.register({ kind: 'exact', path, handler })` | unchanged; resource routes are additive |
+| `connection.requestRejection(req)` | unchanged; still the number to answer with (401 unauthenticated) |
+| `sessionQuery.listSessions` / `readSession` | unchanged; the session log format is still v4 |
+| `sessionPersistence.list()` | `sizeBytes` unchanged; `location` is additive |
+| `ctx.effect` / `ctx.inject` / `ctx.get` | unchanged under Cordis 4.1.0 |
+| Volatile config live-update | unchanged: Cordis `Fiber.resolveConfig` plus Loader `_commitVolatile` still commit into the running fiber and emit `loader/volatile-update`, so a Settings write needs no remount |
+| Client `slots` / `configForms` / `locale` | unchanged contracts |
+| `settings.section.icon` | new in 0.2.2, optional; registered when the slot exists |
 
 ## Non-goals
 

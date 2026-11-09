@@ -75,6 +75,17 @@ test('the settings schema library is a declared dependency', () => {
   assert.ok(pkg.dependencies['@deepseek-ai/schemastery'], 'Config needs schemastery')
 })
 
+test('the manifest declares the DSH versions it is built for', () => {
+  // DSH 0.2.2 enforces plugin dsh requirements at install and activation; an
+  // own engines.dsh decides alone, so it must admit the verified prereleases.
+  assert.equal(typeof pkg.engines.dsh, 'string', 'engines.dsh gates activation')
+  assert.match(pkg.engines.dsh, /0\.2\.1-rc\.5/, 'the range admits the 0.2.1 baseline')
+  assert.match(pkg.engines.dsh, /<0\.3\.0/, 'the range excludes the next minor')
+  // The plugin's own code still runs on Node 20 (CI covers it); the Node floor
+  // that 0.2.2 raises to 24.9 belongs to DSH, not to this package.
+  assert.equal(pkg.engines.node, '>=20', 'the plugin itself needs no newer Node')
+})
+
 test('every required file exists and lib/ ships only runtime modules', () => {
   for (const relative of REQUIRED_FILES) {
     assert.ok(statSync(path.join(root, relative)).isFile(), `${relative} is missing`)

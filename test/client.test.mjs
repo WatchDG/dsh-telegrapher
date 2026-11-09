@@ -57,13 +57,29 @@ function textOf(node, out = []) {
   return out
 }
 
-function mountClient() {
+/** Collect every element node in the rendered tree. */
+function collectNodes(node, out = []) {
+  if (node === null || node === undefined || node === false) return out
+  if (Array.isArray(node)) {
+    for (const child of node) collectNodes(child, out)
+    return out
+  }
+  if (node.props) {
+    out.push(node)
+    collectNodes(node.props.children, out)
+  }
+  return out
+}
+
+function mountClient(options = {}) {
   const state = harness()
   assert.ok(state.module, 'the loader did not receive a module')
   const calls = []
-  const registered = { component: null, options: null, dictionaries: null }
+  const slots = []
+  const registered = { component: null, options: null, dictionaries: null, icon: null }
   const form = { set: async (field, value) => calls.push([field, value]) }
   const ctx = {
+    logger: { warn: () => {} },
     effect(callback, label) {
       assert.equal(typeof label, 'string')
       return callback()
@@ -88,18 +104,27 @@ function mountClient() {
     },
     slots: {
       inject(name, callback) {
-        assert.equal(name, 'settings.section')
+        slots.push(name)
+        // A 0.2.1 Client declares no navigation icon slot at all.
+        if (name === 'settings.section.icon' && options.iconSlot === false) {
+          throw new Error(`unknown slot ${name}`)
+        }
         return callback()
       },
-      register(options, component) {
-        registered.options = options
+      register(registration, component) {
+        if (registration.name === 'settings.section.icon') {
+          registered.icon = { options: registration, component }
+          return () => {}
+        }
+        assert.equal(registration.name, 'settings.section')
+        registered.options = registration
         registered.component = component
         return () => {}
       },
     },
   }
   state.module.apply(ctx)
-  return { ...registered, calls, module: state.module }
+  return { ...registered, calls, slots, module: state.module }
 }
 
 test('the bundle id and the service list match the Host expectations', () => {
@@ -161,4 +186,28 @@ test('English and Russian dictionaries define identical keys', () => {
   const mounted = mountClient()
   const { en, ru } = mounted.dictionaries.dictionaries
   assert.deepEqual(Object.keys(en).sort(), Object.keys(ru).sort())
+})
+
+test('the navigation icon registers for the section id on a 0.2.2 Client', () => {
+  const mounted = mountClient()
+  assert.ok(mounted.slots.includes('settings.section.icon'), 'the icon slot is requested')
+  assert.equal(mounted.icon.options.name, 'settings.section.icon')
+  assert.equal(mounted.icon.options.id, 'telegrapher', 'the icon id must match the section id')
+  assert.equal(mounted.icon.options.order, 19.5)
+  const tree = mounted.icon.component({ size: 16 })
+  assert.equal(tree.type, 'svg')
+  assert.equal(tree.props.width, 16)
+  assert.equal(tree.props.height, 16)
+  assert.equal(tree.props['aria-hidden'], 'true')
+  const text = textOf(tree)
+  const shapes = collectNodes(tree)
+  assert.ok(shapes.some((node) => node.props?.d === 'M22 38.5 L32 48.5 L42 38.5'), 'the glyph keeps its chevron path')
+  assert.ok(shapes.some((node) => node.type === 'circle'), 'the telegraph dots are drawn')
+})
+
+test('a Client without the icon slot still registers the settings page', () => {
+  const mounted = mountClient({ iconSlot: false })
+  assert.equal(mounted.icon, null, 'nothing is registered for a slot that does not exist')
+  assert.equal(mounted.options.name, 'settings.section')
+  assert.equal(mounted.options.id, 'telegrapher')
 })
